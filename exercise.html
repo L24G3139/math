@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>証明の練習</title>
+    <link rel="stylesheet" href="review.css">
+    <script>MathJax = { startup: { typeset: false } };</script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* ── Layout ── */
+        #ex-wrap {
+            width: 100%;
+            max-width: 760px;
+        }
+
+        /* ── Section heading ── */
+        .sec-label {
+            font-size: 0.78em;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin: 0 0 14px;
+        }
+
+        /* ── Proof reference cards ── */
+        .proof-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(59,111,212,0.04);
+        }
+
+        .proof-card summary {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 20px;
+            cursor: pointer;
+            list-style: none;
+            font-weight: 600;
+            font-size: 0.96em;
+            color: var(--text);
+            user-select: none;
+        }
+        .proof-card summary::-webkit-details-marker { display: none; }
+
+        .proof-num {
+            background: var(--primary-lt);
+            color: var(--primary);
+            border-radius: 6px;
+            padding: 2px 10px;
+            font-size: 0.8em;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .proof-chevron {
+            margin-left: auto;
+            color: var(--muted);
+            font-size: 0.75em;
+            transition: transform 0.2s;
+        }
+        details[open] .proof-chevron { transform: rotate(90deg); }
+
+        .proof-body {
+            padding: 4px 20px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 22px;
+            align-items: flex-start;
+        }
+
+        .proof-text { flex: 1; min-width: 0; }
+
+        .thm-box {
+            background: var(--primary-lt);
+            border-left: 3px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+            padding: 10px 14px;
+            font-size: 0.93em;
+            line-height: 1.85;
+            margin: 14px 0 12px;
+        }
+
+        .proof-key {
+            font-size: 0.87em;
+            color: var(--muted);
+            line-height: 1.95;
+        }
+        .proof-key .kw { color: var(--primary); font-weight: 700; }
+
+        .proof-fig {
+            flex-shrink: 0;
+            width: 165px;
+        }
+        .proof-fig svg { width: 100%; height: auto; display: block; }
+
+        /* ── Mode bar ── */
+        .mode-bar {
+            display: flex;
+            gap: 6px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 5px;
+            margin: 28px 0 18px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.92em;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--muted);
+            background: transparent;
+            transition: background 0.15s, color 0.15s;
+        }
+        .mode-btn.active {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        /* ── Exercise block ── */
+        .ex-block {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 8px rgba(59,111,212,0.05);
+        }
+
+        .ex-hd {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .ex-tag {
+            background: var(--primary);
+            color: #fff;
+            border-radius: 6px;
+            padding: 3px 12px;
+            font-size: 0.8em;
+            font-weight: 700;
+        }
+
+        .ex-title {
+            font-size: 0.98em;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* ── Guided proof steps ── */
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-bottom: 18px;
+        }
+
+        .step-row {
+            display: flex;
+            gap: 14px;
+            align-items: baseline;
+            padding: 10px 0;
+            border-bottom: 1px dashed var(--border);
+            font-size: 0.92em;
+            line-height: 1.85;
+        }
+        .step-row:last-child { border-bottom: none; }
+
+        .step-n {
+            flex-shrink: 0;
+            color: var(--muted);
+            font-size: 0.82em;
+            min-width: 20px;
+            padding-top: 2px;
+        }
+
+        .step-c { flex: 1; }
+
+        /* ── Blank inputs ── */
+        .blank {
+            border: none;
+            border-bottom: 2px solid var(--primary);
+            background: var(--primary-lt);
+            border-radius: 4px 4px 0 0;
+            padding: 2px 8px;
+            font-size: 0.94em;
+            font-family: inherit;
+            color: var(--text);
+            text-align: center;
+            min-width: 72px;
+            outline: none;
+            transition: background 0.12s;
+            vertical-align: baseline;
+        }
+        .blank:focus { background: #c4d9f7; }
+
+        .blank.ok {
+            background: var(--correct-bg);
+            border-bottom-color: var(--correct);
+            color: var(--correct);
+        }
+        .blank.ng {
+            background: var(--wrong-bg);
+            border-bottom-color: var(--wrong);
+            color: var(--wrong);
+            animation: shake 0.38s ease;
+        }
+
+        /* ── Buttons ── */
+        .check-btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 9px;
+            padding: 10px 24px;
+            font-size: 0.92em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+            margin-right: 8px;
+        }
+        .check-btn:hover { background: #2d5bb5; transform: translateY(-1px); }
+
+        .reset-btn {
+            background: transparent;
+            color: var(--muted);
+            border: 1.5px solid var(--border);
+            border-radius: 9px;
+            padding: 10px 18px;
+            font-size: 0.88em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s;
+        }
+        .reset-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+        .check-msg {
+            margin-top: 12px;
+            font-size: 0.88em;
+            font-weight: 700;
+            min-height: 1.2em;
+        }
+        .check-msg.ok  { color: var(--correct); }
+        .check-msg.ng  { color: var(--wrong); }
+
+        /* ── Free mode ── */
+        .prob-box {
+            background: #f7f9fc;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-size: 0.92em;
+            line-height: 1.85;
+            margin-bottom: 12px;
+        }
+
+        .proof-ta {
+            width: 100%;
+            min-height: 130px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 0.91em;
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif;
+            color: var(--text);
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.15s;
+            line-height: 1.9;
+        }
+        .proof-ta:focus { border-color: var(--primary); }
+
+        .ans-btn {
+            background: transparent;
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+            border-radius: 9px;
+            padding: 9px 20px;
+            font-size: 0.88em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.15s;
+        }
+        .ans-btn:hover { background: var(--primary-lt); }
+
+        .model-ans {
+            display: none;
+            margin-top: 14px;
+            background: var(--correct-bg);
+            border: 1px solid var(--correct-bd);
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-size: 0.9em;
+            line-height: 2;
+            color: #145228;
+        }
+        .model-ans.show { display: block; }
+        .model-ans-hd {
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--correct);
+        }
+
+        /* ── Hint chip ── */
+        .hint {
+            display: inline-block;
+            font-size: 0.78em;
+            color: var(--muted);
+            background: #f0f2f7;
+            border-radius: 99px;
+            padding: 2px 10px;
+            margin-bottom: 14px;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 580px) {
+            .proof-body { flex-direction: column; }
+            .proof-fig  { width: 100%; max-width: 180px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="class.html" class="back-link">← 授業ページに戻る</a>
+        <span class="header-title">証明の練習</span>
+    </header>
+
+    <main>
+    <div id="ex-wrap">
+
+        <!-- ════════════════════════════════
+             PROOF LIST
+        ════════════════════════════════ -->
+        <p class="sec-label">証明一覧</p>
+
+        <!-- ── Proof 1: 接線の長さ ── -->
+        <details class="proof-card">
+            <summary>
+                <span class="proof-num">証明①</span>
+                接線の長さ &thinsp;（\(PS = PT\)）
+                <span class="proof-chevron">▶</span>
+            </summary>
+            <div class="proof-body">
+                <div class="proof-text">
+                    <div class="thm-box">
+                        円Oの外部の点Pから引いた2本の接線の<br>
+                        接点をS, Tとすると \[PS = PT\]
+                    </div>
+                    <div class="proof-key">
+                        <span class="kw">【使う性質】</span><br>
+                        ・接線⊥半径&ensp;（∠PSO = ∠PTO = 90°）<br>
+                        ・OS = OT&ensp;（半径）<br>
+                        ・OP = OP&ensp;（共通）<br>
+                        <span class="kw">【合同条件】</span><br>
+                        　直角三角形の斜辺と他の1辺がそれぞれ等しい<br>
+                        　△POS ≡ △POT &ensp;⟹&ensp; PS = PT
+                    </div>
+                </div>
+                <div class="proof-fig">
+                    <svg viewBox="0 0 175 165" xmlns="http://www.w3.org/2000/svg" style="font-family:serif">
+                        <circle cx="105" cy="83" r="55" fill="#eef4ff" stroke="#3b6fd4" stroke-width="1.5"/>
+                        <!-- P -->
+                        <circle cx="16" cy="83" r="3" fill="#1e2d4a"/>
+                        <text x="4" y="87" font-size="12" fill="#1e2d4a" font-style="italic">P</text>
+                        <!-- S (70,42), T (70,124) -->
+                        <circle cx="70" cy="41" r="3" fill="#3b6fd4"/>
+                        <text x="65" y="32" font-size="11" fill="#3b6fd4" font-style="italic">S</text>
+                        <circle cx="70" cy="125" r="3" fill="#3b6fd4"/>
+                        <text x="65" y="140" font-size="11" fill="#3b6fd4" font-style="italic">T</text>
+                        <!-- Tangents PS, PT -->
+                        <line x1="16" y1="83" x2="70" y2="41" stroke="#3b6fd4" stroke-width="1.8"/>
+                        <line x1="16" y1="83" x2="70" y2="125" stroke="#3b6fd4" stroke-width="1.8"/>
+                        <!-- O -->
+                        <circle cx="105" cy="83" r="2.5" fill="#1e2d4a"/>
+                        <text x="109" y="87" font-size="11" fill="#1e2d4a" font-style="italic">O</text>
+                        <!-- OP dashed -->
+                        <line x1="16" y1="83" x2="105" y2="83" stroke="#9aabb8" stroke-width="1" stroke-dasharray="4,3"/>
+                        <!-- OS, OT dashed -->
+                        <line x1="105" y1="83" x2="70" y2="41" stroke="#b8c8d8" stroke-width="1" stroke-dasharray="4,3"/>
+                        <line x1="105" y1="83" x2="70" y2="125" stroke="#b8c8d8" stroke-width="1" stroke-dasharray="4,3"/>
+                        <!-- Right angle at S -->
+                        <polyline points="74,49 80,46 77,39" fill="none" stroke="#c0392b" stroke-width="1.2"/>
+                        <!-- Right angle at T -->
+                        <polyline points="74,117 80,120 77,127" fill="none" stroke="#c0392b" stroke-width="1.2"/>
+                        <!-- Labels -->
+                        <text x="38" y="57" font-size="9" fill="#3b6fd4">PS</text>
+                        <text x="38" y="117" font-size="9" fill="#3b6fd4">PT</text>
+                    </svg>
+                </div>
+            </div>
+        </details>
+
+        <!-- ── Proof 2: 方べきの定理（2弦） ── -->
+        <details class="proof-card">
+            <summary>
+                <span class="proof-num">証明②</span>
+                方べきの定理（2弦・円内部の点P）
+                <span class="proof-chevron">▶</span>
+            </summary>
+            <div class="proof-body">
+                <div class="proof-text">
+                    <div class="thm-box">
+                        円内部の点Pを通る2弦AB, CDが交わるとき
+                        \[PA \cdot PB = PC \cdot PD\]
+                    </div>
+                    <div class="proof-key">
+                        <span class="kw">【使う性質】</span><br>
+                        ・∠APC = ∠DPB&ensp;（対頂角）<br>
+                        ・∠CAP = ∠BDP&ensp;（弧BCに対する円周角）<br>
+                        <span class="kw">【相似条件】</span><br>
+                        　2組の角がそれぞれ等しい（AA相似）<br>
+                        　△PAC ∽ △PDB<br>
+                        　PA/PD = PC/PB &ensp;⟹&ensp; PA·PB = PC·PD
+                    </div>
+                </div>
+                <div class="proof-fig">
+                    <svg viewBox="0 0 175 158" xmlns="http://www.w3.org/2000/svg" style="font-family:serif">
+                        <circle cx="88" cy="79" r="60" fill="#eef4ff" stroke="#3b6fd4" stroke-width="1.5"/>
+                        <!-- A(28,48) B(156,98) C(38,128) D(148,40) -->
+                        <line x1="28" y1="48" x2="156" y2="98" stroke="#3b6fd4" stroke-width="1.7"/>
+                        <line x1="38" y1="128" x2="148" y2="40" stroke="#8898b0" stroke-width="1.7"/>
+                        <circle cx="28"  cy="48"  r="3" fill="#3b6fd4"/>
+                        <circle cx="156" cy="98"  r="3" fill="#3b6fd4"/>
+                        <circle cx="38"  cy="128" r="3" fill="#8898b0"/>
+                        <circle cx="148" cy="40"  r="3" fill="#8898b0"/>
+                        <!-- P approx (87,77) -->
+                        <circle cx="87" cy="77" r="3.5" fill="#c0392b"/>
+                        <text x="91" y="75" font-size="11" fill="#c0392b" font-style="italic">P</text>
+                        <!-- Labels -->
+                        <text x="14"  y="50"  font-size="12" fill="#3b6fd4" font-style="italic">A</text>
+                        <text x="159" y="102" font-size="12" fill="#3b6fd4" font-style="italic">B</text>
+                        <text x="24"  y="141" font-size="12" fill="#8898b0" font-style="italic">C</text>
+                        <text x="151" y="38"  font-size="12" fill="#8898b0" font-style="italic">D</text>
+                        <!-- Angle arcs at P -->
+                        <path d="M95,69 Q89,65 84,70" fill="none" stroke="#c0392b" stroke-width="1.5"/>
+                        <path d="M79,85 Q84,91 90,86" fill="none" stroke="#c0392b" stroke-width="1.5"/>
+                        <!-- Equal marks on arc -->
+                        <text x="96" y="67" font-size="9" fill="#c0392b">=</text>
+                        <text x="75" y="93" font-size="9" fill="#c0392b">=</text>
+                    </svg>
+                </div>
+            </div>
+        </details>
+
+        <!-- ── Proof 3: 方べきの定理（接線と割線） ── -->
+        <details class="proof-card">
+            <summary>
+                <span class="proof-num">証明③</span>
+                方べきの定理（接線と割線・円外部の点P）
+                <span class="proof-chevron">▶</span>
+            </summary>
+            <div class="proof-body">
+                <div class="proof-text">
+                    <div class="thm-box">
+                        円外部の点Pから接線PTと割線PABを引くとき
+                        \[PA \cdot PB = PT^2\]
+                    </div>
+                    <div class="proof-key">
+                        <span class="kw">【使う性質】</span><br>
+                        ・∠P は共通<br>
+                        ・∠PAT = ∠PTB&ensp;（接弦定理）<br>
+                        <span class="kw">【相似条件】</span><br>
+                        　2組の角がそれぞれ等しい（AA相似）<br>
+                        　△PAT ∽ △PTB<br>
+                        　PA/PT = PT/PB &ensp;⟹&ensp; PA·PB = PT²
+                    </div>
+                </div>
+                <div class="proof-fig">
+                    <svg viewBox="0 0 175 160" xmlns="http://www.w3.org/2000/svg" style="font-family:serif">
+                        <circle cx="106" cy="80" r="55" fill="#eef4ff" stroke="#3b6fd4" stroke-width="1.5"/>
+                        <!-- P external left -->
+                        <circle cx="15" cy="80" r="3" fill="#1e2d4a"/>
+                        <text x="4"  y="84" font-size="12" fill="#1e2d4a" font-style="italic">P</text>
+                        <!-- T (78,32) tangent point -->
+                        <circle cx="78" cy="32" r="3" fill="#3b6fd4"/>
+                        <text x="74" y="23" font-size="12" fill="#3b6fd4" font-style="italic">T</text>
+                        <!-- Tangent line PT -->
+                        <line x1="15" y1="80" x2="78" y2="32" stroke="#3b6fd4" stroke-width="1.8"/>
+                        <!-- Secant PAB: A(59,125), B(161,80) on x-axis approx -->
+                        <circle cx="60"  cy="123" r="3" fill="#8898b0"/>
+                        <circle cx="161" cy="80"  r="3" fill="#8898b0"/>
+                        <line x1="15" y1="80" x2="170" y2="80" stroke="#8898b0" stroke-width="1.6"/>
+                        <!-- Labels A, B -->
+                        <text x="52"  y="138" font-size="12" fill="#8898b0" font-style="italic">A</text>
+                        <text x="164" y="84"  font-size="12" fill="#8898b0" font-style="italic">B</text>
+                        <!-- O -->
+                        <circle cx="106" cy="80" r="2.5" fill="#1e2d4a"/>
+                        <text x="109" y="76" font-size="11" fill="#1e2d4a" font-style="italic">O</text>
+                        <!-- OT radius dashed -->
+                        <line x1="106" y1="80" x2="78" y2="32" stroke="#b8c8d8" stroke-width="1" stroke-dasharray="4,3"/>
+                        <!-- Angle arc at P -->
+                        <path d="M23,74 Q19,80 23,86" fill="none" stroke="#c0392b" stroke-width="1.5"/>
+                        <text x="26" y="80" font-size="9" fill="#c0392b">共</text>
+                    </svg>
+                </div>
+            </div>
+        </details>
+
+
+        <!-- ── Proof 4: 接線と弦が作る角 ── -->
+        <details class="proof-card">
+            <summary>
+                <span class="proof-num">証明④</span>
+                接線と弦が作る角（接弦定理）
+                <span class="proof-chevron">▶</span>
+            </summary>
+            <div class="proof-body">
+                <div class="proof-text">
+                    <div class="thm-box">
+                        円の点Aにおける接線\(\ell\)と弦ABがなす角\(\alpha\)は、<br>
+                        弦ABに対する円周角に等しい。
+                        \[\alpha = \angle ACB\]
+                    </div>
+                    <div class="proof-key">
+                        <span class="kw">【証明の流れ】</span><br>
+                        ① 接線⊥OA より ∠OAℓ = 90°<br>
+                        ② ∠OAB = 90° − α<br>
+                        ③ OA = OB（半径）→ △OAB は二等辺三角形<br>
+                        ④ ∠OBA = ∠OAB = 90° − α<br>
+                        ⑤ 内角の和 → ∠AOB = 2α<br>
+                        ⑥ 円周角の定理 → ∠ACB = α
+                    </div>
+                </div>
+                <div class="proof-fig">
+                    <svg viewBox="0 0 175 168" xmlns="http://www.w3.org/2000/svg" style="font-family:serif">
+                        <circle cx="90" cy="78" r="55" fill="#eef4ff" stroke="#3b6fd4" stroke-width="1.5"/>
+                        <!-- A at bottom (270°) = (90,133) -->
+                        <circle cx="90" cy="133" r="3" fill="#3b6fd4"/>
+                        <text x="85" y="148" font-size="12" fill="#3b6fd4" font-style="italic">A</text>
+                        <!-- Tangent line horizontal at A -->
+                        <line x1="12" y1="133" x2="168" y2="133" stroke="#8898b0" stroke-width="1.5" stroke-dasharray="5,3"/>
+                        <!-- B at 135° ≈ (51,39) -->
+                        <circle cx="51" cy="39" r="3" fill="#3b6fd4"/>
+                        <text x="42" y="33" font-size="12" fill="#3b6fd4" font-style="italic">B</text>
+                        <!-- Chord AB -->
+                        <line x1="90" y1="133" x2="51" y2="39" stroke="#3b6fd4" stroke-width="1.8"/>
+                        <!-- C at 10° ≈ (144,68) -->
+                        <circle cx="144" cy="68" r="3" fill="#8898b0"/>
+                        <text x="148" y="71" font-size="12" fill="#8898b0" font-style="italic">C</text>
+                        <!-- CA, CB -->
+                        <line x1="144" y1="68" x2="90" y2="133" stroke="#8898b0" stroke-width="1"/>
+                        <line x1="144" y1="68" x2="51"  y2="39"  stroke="#8898b0" stroke-width="1"/>
+                        <!-- O center -->
+                        <circle cx="90" cy="78" r="2.5" fill="#1e2d4a"/>
+                        <text x="93" y="75" font-size="11" fill="#1e2d4a" font-style="italic">O</text>
+                        <!-- OA, OB dashed radii -->
+                        <line x1="90" y1="78" x2="90" y2="133" stroke="#b8c8d8" stroke-width="1" stroke-dasharray="4,3"/>
+                        <line x1="90" y1="78" x2="51" y2="39"  stroke="#b8c8d8" stroke-width="1" stroke-dasharray="4,3"/>
+                        <!-- Angle α at A (between tangent going right and chord going up-left) -->
+                        <path d="M105,133 Q101,126 95,127" fill="none" stroke="#c0392b" stroke-width="1.5"/>
+                        <text x="106" y="130" font-size="10" fill="#c0392b" font-style="italic">α</text>
+                        <!-- Angle at C -->
+                        <path d="M137,72 Q140,68 137,64" fill="none" stroke="#c0392b" stroke-width="1.5"/>
+                        <text x="126" y="63" font-size="10" fill="#c0392b" font-style="italic">α</text>
+                        <!-- ℓ label -->
+                        <text x="155" y="129" font-size="11" fill="#8898b0" font-style="italic">ℓ</text>
+                    </svg>
+                </div>
+            </div>
+        </details>
+
+        <!-- ── Proof 5: 四角形が円に内接する条件 ── -->
+        <details class="proof-card">
+            <summary>
+                <span class="proof-num">証明⑤</span>
+                円に内接する四角形の性質（対角の和）
+                <span class="proof-chevron">▶</span>
+            </summary>
+            <div class="proof-body">
+                <div class="proof-text">
+                    <div class="thm-box">
+                        円に内接する四角形ABCDにおいて<br>
+                        対角の和は 180° である。
+                        \[\angle A + \angle C = 180°\]
+                    </div>
+                    <div class="proof-key">
+                        <span class="kw">【証明の流れ】</span><br>
+                        ① ∠A は弧BCD に対する円周角<br>
+                        ② ∠C は弧BAD に対する円周角<br>
+                        ③ 弧BCD＋弧BAD = 360°（全円周）<br>
+                        ④ 2∠A + 2∠C = 360°<br>
+                        ⑤ よって ∠A + ∠C = 180°
+                    </div>
+                </div>
+                <div class="proof-fig">
+                    <svg viewBox="0 0 175 160" xmlns="http://www.w3.org/2000/svg" style="font-family:serif">
+                        <circle cx="88" cy="78" r="56" fill="#eef4ff" stroke="#3b6fd4" stroke-width="1.5"/>
+                        <!-- A(38,97) B(71,26) C(138,51) D(125,120) -->
+                        <polygon points="38,97 71,26 138,51 125,120" fill="rgba(59,111,212,0.07)" stroke="#3b6fd4" stroke-width="1.7"/>
+                        <circle cx="38"  cy="97"  r="3" fill="#3b6fd4"/>
+                        <circle cx="71"  cy="26"  r="3" fill="#3b6fd4"/>
+                        <circle cx="138" cy="51"  r="3" fill="#3b6fd4"/>
+                        <circle cx="125" cy="120" r="3" fill="#3b6fd4"/>
+                        <text x="22"  y="101" font-size="12" fill="#1e2d4a" font-style="italic">A</text>
+                        <text x="68"  y="17"  font-size="12" fill="#1e2d4a" font-style="italic">B</text>
+                        <text x="142" y="54"  font-size="12" fill="#1e2d4a" font-style="italic">C</text>
+                        <text x="128" y="134" font-size="12" fill="#1e2d4a" font-style="italic">D</text>
+                        <!-- Angle arcs at A and C (opposite, highlighted) -->
+                        <path d="M46,90 Q42,94 45,101" fill="none" stroke="#c0392b" stroke-width="2"/>
+                        <path d="M130,57 Q134,54 132,47" fill="none" stroke="#c0392b" stroke-width="2"/>
+                        <text x="50"  y="89"  font-size="10" fill="#c0392b">∠A</text>
+                        <text x="119" y="45"  font-size="10" fill="#c0392b">∠C</text>
+                        <!-- 180° label -->
+                        <text x="64" y="126" font-size="10" fill="#c0392b" text-anchor="middle">∠A＋∠C＝180°</text>
+                    </svg>
+                </div>
+            </div>
+        </details>
+
+        <!-- ── Proof 6: 円周角の定理 ── -->
+        <details class="proof-card">
+            <summary>
+                <span class="proof-num">証明⑥</span>
+                円周角の定理
+                <span class="proof-chevron">▶</span>
+            </summary>
+            <div class="proof-body">
+                <div class="proof-text">
+                    <div class="thm-box">
+                        弧ABに対する円周角は中心角の半分である。
+                        \[\angle ACB = \frac{1}{2}\angle AOB\]
+                    </div>
+                    <div class="proof-key">
+                        <span class="kw">【証明の流れ（OがACB内部の場合）】</span><br>
+                        ① C を通る直径 CD を引く<br>
+                        ② OA=OC（半径）→ △OAC 二等辺 → ∠OCA=∠OAC=α<br>
+                        ③ △OAC の外角 → ∠AOD = 2α<br>
+                        ④ 同様に OB=OC → ∠BOD = 2β<br>
+                        ⑤ ∠ACB = α+β，∠AOB = 2α+2β<br>
+                        ⑥ ∴ ∠ACB = (1/2)∠AOB
+                    </div>
+                </div>
+                <div class="proof-fig">
+                    <svg viewBox="0 0 175 162" xmlns="http://www.w3.org/2000/svg" style="font-family:serif">
+                        <circle cx="88" cy="80" r="56" fill="#eef4ff" stroke="#3b6fd4" stroke-width="1.5"/>
+                        <!-- O center -->
+                        <circle cx="88" cy="80" r="2.5" fill="#1e2d4a"/>
+                        <text x="91"  cy="77" font-size="11" fill="#1e2d4a" font-style="italic">O</text>
+                        <!-- A(42,106) B(134,106) C(98,24) D(78,136) (diameter CD) -->
+                        <circle cx="42"  cy="106" r="3" fill="#3b6fd4"/>
+                        <circle cx="134" cy="106" r="3" fill="#3b6fd4"/>
+                        <circle cx="98"  cy="24"  r="3" fill="#c0392b"/>
+                        <circle cx="78"  cy="136" r="3" fill="#8898b0"/>
+                        <!-- Diameter CD dashed -->
+                        <line x1="98" y1="24" x2="78" y2="136" stroke="#8898b0" stroke-width="1" stroke-dasharray="4,3"/>
+                        <!-- Lines from C to A and B -->
+                        <line x1="98" y1="24" x2="42"  y2="106" stroke="#3b6fd4" stroke-width="1.7"/>
+                        <line x1="98" y1="24" x2="134" y2="106" stroke="#3b6fd4" stroke-width="1.7"/>
+                        <!-- Radii OA, OB -->
+                        <line x1="88" y1="80" x2="42"  y2="106" stroke="#b8c8d8" stroke-width="1" stroke-dasharray="4,3"/>
+                        <line x1="88" y1="80" x2="134" y2="106" stroke="#b8c8d8" stroke-width="1" stroke-dasharray="4,3"/>
+                        <!-- Labels -->
+                        <text x="28"  y="110" font-size="12" fill="#3b6fd4" font-style="italic">A</text>
+                        <text x="137" y="110" font-size="12" fill="#3b6fd4" font-style="italic">B</text>
+                        <text x="101" y="18"  font-size="12" fill="#c0392b" font-style="italic">C</text>
+                        <text x="63"  y="150" font-size="12" fill="#8898b0" font-style="italic">D</text>
+                        <!-- Angle α at C left -->
+                        <path d="M91,31 Q88,35 85,31" fill="none" stroke="#c0392b" stroke-width="1.5"/>
+                        <text x="79" y="43" font-size="9" fill="#c0392b" font-style="italic">α</text>
+                        <!-- Angle β at C right -->
+                        <path d="M101,32 Q103,36 106,32" fill="none" stroke="#3b6fd4" stroke-width="1.5"/>
+                        <text x="103" y="43" font-size="9" fill="#3b6fd4" font-style="italic">β</text>
+                        <!-- Central angle arc -->
+                        <path d="M80,84 A12,12 0 0,1 96,84" fill="none" stroke="#1e2d4a" stroke-width="1.5"/>
+                        <text x="84" y="100" font-size="9" fill="#1e2d4a">2(α+β)</text>
+                    </svg>
+                </div>
+            </div>
+        </details>
+
+
+        <!-- ════════════════════════════════
+             MODE SELECTOR
+        ════════════════════════════════ -->
+        <div class="mode-bar">
+            <button class="mode-btn active" id="btn-guided" onclick="setMode('guided')">
+                🧩&ensp;穴埋め（誘導あり）
+            </button>
+            <button class="mode-btn" id="btn-free" onclick="setMode('free')">
+                ✏️&ensp;誘導なし
+            </button>
+        </div>
+
+
+        <!-- ════════════════════════════════
+             EXERCISE 1: 接線の長さ
+        ════════════════════════════════ -->
+        <div class="ex-block">
+            <div class="ex-hd">
+                <span class="ex-tag">問題①</span>
+                <span class="ex-title">接線の長さの証明</span>
+            </div>
+
+            <!-- Guided -->
+            <div id="g1">
+                <span class="hint">ヒント：△POS と △POT の合同を示す</span>
+                <div class="step-list">
+                    <div class="step-row">
+                        <span class="step-n">①</span>
+                        <span class="step-c">\(\triangle POS\) と \(\triangle POT\) において</span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">②</span>
+                        <span class="step-c">
+                            接線の性質より&ensp;\(\angle PSO = \angle PTO =\)
+                            <input class="blank" id="b1a" data-ans="90" placeholder="?" size="3">
+                            °&ensp;&hellip;(1)
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">③</span>
+                        <span class="step-c">
+                            半径より&ensp;\(OS =\)
+                            <input class="blank" id="b1b" data-ans="ot" placeholder="??" size="4">
+                            &ensp;&hellip;(2)
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">④</span>
+                        <span class="step-c">
+                            <input class="blank" id="b1c" data-ans="op,po" placeholder="??" size="4">
+                            は共通&ensp;&hellip;(3)
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">⑤</span>
+                        <span class="step-c">
+                            (1)(2)(3)より、
+                            <input class="blank" id="b1d" data-ans="直角三角形の斜辺と他の1辺,斜辺と他の1辺,斜辺と1辺" placeholder="　　合同条件　　" size="14">
+                            がそれぞれ等しいから
+                            &ensp;\(\triangle POS \equiv \triangle POT\)
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">⑥</span>
+                        <span class="step-c">
+                            合同な図形の対応する辺は等しいから&ensp;\(PS =\)
+                            <input class="blank" id="b1e" data-ans="pt" placeholder="??" size="4">
+                            &ensp;<span style="color:var(--muted);font-size:.85em">（証明終）</span>
+                        </span>
+                    </div>
+                </div>
+                <button class="check-btn" onclick="checkAll('g1','r1')">答えを確認</button>
+                <button class="reset-btn" onclick="resetAll('g1','r1')">リセット</button>
+                <div class="check-msg" id="r1"></div>
+            </div>
+
+            <!-- Free -->
+            <div id="f1" style="display:none">
+                <div class="prob-box">
+                    <strong>【定理】</strong><br>
+                    円Oの外部の点Pから円に引いた2本の接線の接点をS, Tとするとき、\(PS = PT\) を証明せよ。
+                </div>
+                <textarea class="proof-ta" placeholder="証明を書く…"></textarea>
+                <br>
+                <button class="ans-btn" onclick="toggleAns('ma1',this)">模範解答を見る</button>
+                <div class="model-ans" id="ma1">
+                    <div class="model-ans-hd">模範解答</div>
+                    \(\triangle POS\) と \(\triangle POT\) において<br>
+                    接線は接点を通る半径と垂直だから&ensp;\(\angle PSO = \angle PTO = 90°\)&emsp;&hellip;(1)<br>
+                    半径より&ensp;\(OS = OT\)&emsp;&hellip;(2)<br>
+                    \(OP\) は共通&emsp;&hellip;(3)<br>
+                    (1)(2)(3)より、直角三角形の斜辺と他の1辺がそれぞれ等しいから<br>
+                    &emsp;\(\triangle POS \equiv \triangle POT\)<br>
+                    合同な図形の対応する辺は等しいから&ensp;\(PS = PT\)&emsp;<strong>（証明終）</strong>
+                </div>
+            </div>
+        </div><!-- /ex-block 1 -->
+
+
+        <!-- ════════════════════════════════
+             EXERCISE 2: 方べきの定理（2弦）
+        ════════════════════════════════ -->
+        <div class="ex-block">
+            <div class="ex-hd">
+                <span class="ex-tag">問題②</span>
+                <span class="ex-title">方べきの定理の証明（2弦・円内部の点）</span>
+            </div>
+
+            <!-- Guided -->
+            <div id="g2">
+                <span class="hint">ヒント：△PAC ∽ △PDB を示す（AA相似）</span>
+                <div class="step-list">
+                    <div class="step-row">
+                        <span class="step-n">①</span>
+                        <span class="step-c">\(\triangle PAC\) と \(\triangle PDB\) において</span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">②</span>
+                        <span class="step-c">
+                            <input class="blank" id="b2a" data-ans="対頂角" placeholder="　　　" size="5">
+                            より&ensp;\(\angle APC = \angle DPB\)&ensp;&hellip;(1)
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">③</span>
+                        <span class="step-c">
+                            弧
+                            <input class="blank" id="b2b" data-ans="bc,cb" placeholder="??" size="3">
+                            に対する円周角より&ensp;\(\angle CAP = \angle BDP\)&ensp;&hellip;(2)
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">④</span>
+                        <span class="step-c">
+                            (1)(2)より、2組の角がそれぞれ等しいから&ensp;
+                            \(\triangle PAC \backsim \triangle PDB\)&ensp;（AA相似）
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">⑤</span>
+                        <span class="step-c">
+                            対応する辺の比は等しいので&ensp;
+                            \(\dfrac{PA}{PD} = \dfrac{PC}{PB}\)<br>
+                            したがって&ensp;\(PA \cdot\)
+                            <input class="blank" id="b2c" data-ans="pb" placeholder="??" size="3">
+                            \(= PC \cdot\)
+                            <input class="blank" id="b2d" data-ans="pd" placeholder="??" size="3">
+                            &ensp;<span style="color:var(--muted);font-size:.85em">（証明終）</span>
+                        </span>
+                    </div>
+                </div>
+                <button class="check-btn" onclick="checkAll('g2','r2')">答えを確認</button>
+                <button class="reset-btn" onclick="resetAll('g2','r2')">リセット</button>
+                <div class="check-msg" id="r2"></div>
+            </div>
+
+            <!-- Free -->
+            <div id="f2" style="display:none">
+                <div class="prob-box">
+                    <strong>【定理】</strong><br>
+                    円の内部の点Pを通る2弦AB, CDが点Pで交わるとき、\(PA \cdot PB = PC \cdot PD\) を証明せよ。
+                </div>
+                <textarea class="proof-ta" placeholder="証明を書く…"></textarea>
+                <br>
+                <button class="ans-btn" onclick="toggleAns('ma2',this)">模範解答を見る</button>
+                <div class="model-ans" id="ma2">
+                    <div class="model-ans-hd">模範解答</div>
+                    \(\triangle PAC\) と \(\triangle PDB\) において<br>
+                    対頂角より&ensp;\(\angle APC = \angle DPB\)&emsp;&hellip;(1)<br>
+                    弧BCに対する円周角より&ensp;\(\angle CAP = \angle BDP\)&emsp;&hellip;(2)<br>
+                    (1)(2)より、2組の角がそれぞれ等しいから<br>
+                    &emsp;\(\triangle PAC \backsim \triangle PDB\)&emsp;（AA相似）<br>
+                    対応する辺の比は等しいので&ensp;\(\dfrac{PA}{PD} = \dfrac{PC}{PB}\)<br>
+                    したがって&ensp;\(PA \cdot PB = PC \cdot PD\)&emsp;<strong>（証明終）</strong>
+                </div>
+            </div>
+        </div><!-- /ex-block 2 -->
+
+
+        <!-- ════════════════════════════════
+             EXERCISE 3: 方べきの定理（接線）
+        ════════════════════════════════ -->
+        <div class="ex-block">
+            <div class="ex-hd">
+                <span class="ex-tag">問題③</span>
+                <span class="ex-title">方べきの定理の証明（接線と割線）</span>
+            </div>
+
+            <!-- Guided -->
+            <div id="g3">
+                <span class="hint">ヒント：△PAT ∽ △PTB を示す（AA相似）</span>
+                <div class="step-list">
+                    <div class="step-row">
+                        <span class="step-n">①</span>
+                        <span class="step-c">\(\triangle PAT\) と \(\triangle PTB\) において</span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">②</span>
+                        <span class="step-c">
+                            \(\angle\)
+                            <input class="blank" id="b3a" data-ans="p,tpa,apt,tpb" placeholder="?" size="3">
+                            は共通&ensp;&hellip;(1)
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">③</span>
+                        <span class="step-c">
+                            <input class="blank" id="b3b" data-ans="接弦定理" placeholder="　　　" size="6">
+                            より&ensp;\(\angle PAT = \angle PTB\)&ensp;&hellip;(2)
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">④</span>
+                        <span class="step-c">
+                            (1)(2)より、2組の角がそれぞれ等しいから&ensp;
+                            \(\triangle PAT \backsim \triangle\)
+                            <input class="blank" id="b3c" data-ans="ptb" placeholder="???" size="5">
+                            &ensp;（AA相似）
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">⑤</span>
+                        <span class="step-c">
+                            対応する辺の比より&ensp;\(\dfrac{PA}{PT} = \dfrac{PT}{PB}\)<br>
+                            したがって&ensp;\(PA \cdot PB =\)
+                            <input class="blank" id="b3d" data-ans="pt2,pt^2,pt²,pt の2乗" placeholder="??" size="5">
+                            &ensp;<span style="color:var(--muted);font-size:.85em">（証明終）</span>
+                        </span>
+                    </div>
+                </div>
+                <button class="check-btn" onclick="checkAll('g3','r3')">答えを確認</button>
+                <button class="reset-btn" onclick="resetAll('g3','r3')">リセット</button>
+                <div class="check-msg" id="r3"></div>
+            </div>
+
+            <!-- Free -->
+            <div id="f3" style="display:none">
+                <div class="prob-box">
+                    <strong>【定理】</strong><br>
+                    円外部の点Pから接線PTと割線PAB（AはPに近い方）を引くとき、
+                    \(PA \cdot PB = PT^2\) を証明せよ。
+                </div>
+                <textarea class="proof-ta" placeholder="証明を書く…"></textarea>
+                <br>
+                <button class="ans-btn" onclick="toggleAns('ma3',this)">模範解答を見る</button>
+                <div class="model-ans" id="ma3">
+                    <div class="model-ans-hd">模範解答</div>
+                    \(\triangle PAT\) と \(\triangle PTB\) において<br>
+                    \(\angle P\) は共通&emsp;&hellip;(1)<br>
+                    接弦定理より&ensp;\(\angle PAT = \angle PTB\)&emsp;&hellip;(2)<br>
+                    (1)(2)より、2組の角がそれぞれ等しいから<br>
+                    &emsp;\(\triangle PAT \backsim \triangle PTB\)&emsp;（AA相似）<br>
+                    対応する辺の比は等しいので&ensp;\(\dfrac{PA}{PT} = \dfrac{PT}{PB}\)<br>
+                    したがって&ensp;\(PA \cdot PB = PT^2\)&emsp;<strong>（証明終）</strong>
+                </div>
+            </div>
+        </div><!-- /ex-block 3 -->
+
+
+        <!-- ════════════════════════════════
+             EXERCISE 4: 接線と弦が作る角
+        ════════════════════════════════ -->
+        <div class="ex-block">
+            <div class="ex-hd">
+                <span class="ex-tag">問題④</span>
+                <span class="ex-title">接線と弦が作る角の証明（接弦定理）</span>
+            </div>
+
+            <!-- Guided -->
+            <div id="g4">
+                <span class="hint">ヒント：OA = OB（半径）→ 二等辺三角形 → 中心角 = 2α → 円周角の定理</span>
+                <div class="step-list">
+                    <div class="step-row">
+                        <span class="step-n">①</span>
+                        <span class="step-c">
+                            接線\(\ell\)と弦ABのなす角を\(\alpha\)とし、
+                            Aを通る半径OAを引く
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">②</span>
+                        <span class="step-c">
+                            接線⊥半径より&ensp;
+                            \(\angle OA\ell =\)
+                            <input class="blank" id="b4a" data-ans="90" placeholder="?" size="3">
+                            °&ensp;だから&ensp;\(\angle OAB = 90° - \alpha\)&ensp;&hellip;(1)
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">③</span>
+                        <span class="step-c">
+                            <input class="blank" id="b4b" data-ans="oa=ob,ob=oa" placeholder="?? = ??" size="7">
+                            （半径）より \(\triangle OAB\) は
+                            <input class="blank" id="b4c" data-ans="二等辺三角形,二等辺" placeholder="　　　" size="7">
+                            &ensp;&hellip;(2)
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">④</span>
+                        <span class="step-c">
+                            (1)(2)より&ensp;\(\angle OBA = \angle OAB = 90° - \alpha\)&ensp;&hellip;(3)
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">⑤</span>
+                        <span class="step-c">
+                            三角形の内角の和より<br>
+                            \(\angle AOB = 180° - (90°-\alpha) - (90°-\alpha) =\)
+                            <input class="blank" id="b4d" data-ans="2α,2a" placeholder="??" size="4">
+                            &ensp;&hellip;(4)
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">⑥</span>
+                        <span class="step-c">
+                            円周角の定理より&ensp;
+                            \(\angle ACB = \dfrac{1}{2}\angle AOB = \dfrac{1}{2} \times 2\alpha =\)
+                            <input class="blank" id="b4e" data-ans="α,a" placeholder="?" size="3">
+                            &ensp;<span style="color:var(--muted);font-size:.85em">（証明終）</span>
+                        </span>
+                    </div>
+                </div>
+                <button class="check-btn" onclick="checkAll('g4','r4')">答えを確認</button>
+                <button class="reset-btn" onclick="resetAll('g4','r4')">リセット</button>
+                <div class="check-msg" id="r4"></div>
+            </div>
+
+            <!-- Free -->
+            <div id="f4" style="display:none">
+                <div class="prob-box">
+                    <strong>【定理】</strong><br>
+                    円の点Aにおける接線\(\ell\)と弦ABがなす角\(\alpha\)は、弦ABに対する円周角\(\angle ACB\)（Cは\(\ell\)と反対側の弧上の点）に等しいことを証明せよ。
+                </div>
+                <textarea class="proof-ta" placeholder="証明を書く…"></textarea>
+                <br>
+                <button class="ans-btn" onclick="toggleAns('ma4',this)">模範解答を見る</button>
+                <div class="model-ans" id="ma4">
+                    <div class="model-ans-hd">模範解答</div>
+                    接線\(\ell\)と弦ABのなす角を\(\alpha\)とし、AO を結ぶ。<br>
+                    接線は接点を通る半径と垂直だから&ensp;\(\angle OA\ell = 90°\)<br>
+                    よって&ensp;\(\angle OAB = 90° - \alpha\)&emsp;&hellip;(1)<br>
+                    半径より \(OA = OB\) だから \(\triangle OAB\) は二等辺三角形。<br>
+                    よって&ensp;\(\angle OBA = \angle OAB = 90° - \alpha\)&emsp;&hellip;(2)<br>
+                    三角形の内角の和より<br>
+                    &emsp;\(\angle AOB = 180° - (90°-\alpha) - (90°-\alpha) = 2\alpha\)&emsp;&hellip;(3)<br>
+                    円周角の定理より&ensp;\(\angle ACB = \dfrac{1}{2}\angle AOB = \dfrac{2\alpha}{2} = \alpha\)<br>
+                    したがって&ensp;\(\angle ACB = \alpha\)&emsp;<strong>（証明終）</strong>
+                </div>
+            </div>
+        </div><!-- /ex-block 4 -->
+
+
+        <!-- ════════════════════════════════
+             EXERCISE 5: 四角形が円に内接する条件
+        ════════════════════════════════ -->
+        <div class="ex-block">
+            <div class="ex-hd">
+                <span class="ex-tag">問題⑤</span>
+                <span class="ex-title">円に内接する四角形の対角の和（∠A + ∠C = 180°）</span>
+            </div>
+
+            <!-- Guided -->
+            <div id="g5">
+                <span class="hint">ヒント：∠A と ∠C はそれぞれ対弧に対する円周角。2つの弧を合わせると全円周。</span>
+                <div class="step-list">
+                    <div class="step-row">
+                        <span class="step-n">①</span>
+                        <span class="step-c">
+                            四角形ABCDは円に内接するとする。
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">②</span>
+                        <span class="step-c">
+                            \(\angle A\)（= ∠BAD）は弧
+                            <input class="blank" id="b5a" data-ans="bcd,cdb,dcb" placeholder="???" size="4">
+                            に対する円周角だから&ensp;
+                            \(2\angle A =\) 弧BCD（中心角）&ensp;&hellip;(1)
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">③</span>
+                        <span class="step-c">
+                            \(\angle C\)（= ∠BCD）は弧
+                            <input class="blank" id="b5b" data-ans="bad,abd,dab" placeholder="???" size="4">
+                            に対する円周角だから&ensp;
+                            \(2\angle C =\) 弧BAD（中心角）&ensp;&hellip;(2)
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">④</span>
+                        <span class="step-c">
+                            弧BCDと弧BADを合わせると全円周だから<br>
+                            弧BCD＋弧BAD =
+                            <input class="blank" id="b5c" data-ans="360,360°,360度" placeholder="???°" size="5">
+                            &ensp;&hellip;(3)
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">⑤</span>
+                        <span class="step-c">
+                            (1)(2)(3)より&ensp;
+                            \(2\angle A + 2\angle C =\)
+                            <input class="blank" id="b5d" data-ans="360,360°" placeholder="???°" size="5">
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">⑥</span>
+                        <span class="step-c">
+                            よって&ensp;\(\angle A + \angle C =\)
+                            <input class="blank" id="b5e" data-ans="180,180°,180度" placeholder="???°" size="5">
+                            &ensp;<span style="color:var(--muted);font-size:.85em">（証明終）</span>
+                        </span>
+                    </div>
+                </div>
+                <button class="check-btn" onclick="checkAll('g5','r5')">答えを確認</button>
+                <button class="reset-btn" onclick="resetAll('g5','r5')">リセット</button>
+                <div class="check-msg" id="r5"></div>
+            </div>
+
+            <!-- Free -->
+            <div id="f5" style="display:none">
+                <div class="prob-box">
+                    <strong>【定理】</strong><br>
+                    四角形ABCDが円に内接するとき、対角の和は180°、すなわち \(\angle A + \angle C = 180°\) であることを証明せよ。
+                </div>
+                <textarea class="proof-ta" placeholder="証明を書く…"></textarea>
+                <br>
+                <button class="ans-btn" onclick="toggleAns('ma5',this)">模範解答を見る</button>
+                <div class="model-ans" id="ma5">
+                    <div class="model-ans-hd">模範解答</div>
+                    \(\angle A\)（= ∠BAD）は弧BCD に対する円周角だから<br>
+                    &emsp;\(2\angle A =\) 弧BCD（中心角）&emsp;&hellip;(1)<br>
+                    \(\angle C\)（= ∠BCD）は弧BAD に対する円周角だから<br>
+                    &emsp;\(2\angle C =\) 弧BAD（中心角）&emsp;&hellip;(2)<br>
+                    弧BCDと弧BADは円全体を覆うから<br>
+                    &emsp;弧BCD + 弧BAD = 360°&emsp;&hellip;(3)<br>
+                    (1)(2)(3)より<br>
+                    &emsp;\(2\angle A + 2\angle C = 360°\)<br>
+                    したがって&ensp;\(\angle A + \angle C = 180°\)&emsp;<strong>（証明終）</strong>
+                </div>
+            </div>
+        </div><!-- /ex-block 5 -->
+
+
+        <!-- ════════════════════════════════
+             EXERCISE 6: 円周角の定理
+        ════════════════════════════════ -->
+        <div class="ex-block">
+            <div class="ex-hd">
+                <span class="ex-tag">問題⑥</span>
+                <span class="ex-title">円周角の定理の証明（∠ACB = ½∠AOB）</span>
+            </div>
+
+            <!-- Guided -->
+            <div id="g6">
+                <span class="hint">ヒント：C から直径 CD を引き、△OAC と △OBC の二等辺三角形を利用する</span>
+                <div class="step-list">
+                    <div class="step-row">
+                        <span class="step-n">①</span>
+                        <span class="step-c">
+                            C を通る直径 CD を引く（Oを挟んでCの反対の点をDとする）
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">②</span>
+                        <span class="step-c">
+                            \(OA = OC\)（半径）より \(\triangle OAC\) は
+                            <input class="blank" id="b6a" data-ans="二等辺三角形,二等辺" placeholder="　　　" size="7">
+                            &ensp;&hellip;(1)
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">③</span>
+                        <span class="step-c">
+                            \(\angle OCA = \angle OAC = \alpha\) とおくと、<br>
+                            △OACの外角より&ensp;
+                            \(\angle AOD =\)
+                            <input class="blank" id="b6b" data-ans="2α,2a" placeholder="??" size="4">
+                            &ensp;&hellip;(2)
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">④</span>
+                        <span class="step-c">
+                            同様に \(OB = OC\)（半径）より
+                            \(\angle OCB = \angle OBC = \beta\) とおくと<br>
+                            \(\angle BOD =\)
+                            <input class="blank" id="b6c" data-ans="2β,2b" placeholder="??" size="4">
+                            &ensp;&hellip;(3)
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">⑤</span>
+                        <span class="step-c">
+                            \(\angle ACB = \alpha + \beta\)&ensp;かつ<br>
+                            \(\angle AOB = \angle AOD + \angle BOD =\)
+                            <input class="blank" id="b6d" data-ans="2α+2β,2a+2b,2(α+β),2(a+b)" placeholder="　　　　" size="9">
+                            \(= 2\angle ACB\)&ensp;&hellip;(4)
+                        </span>
+                    </div>
+                    <div class="step-row">
+                        <span class="step-n">⑥</span>
+                        <span class="step-c">
+                            (4)より&ensp;
+                            \(\angle ACB = \dfrac{1}{\,\)
+                            <input class="blank" id="b6e" data-ans="2" placeholder="?" size="2">
+                            \(\,}\angle AOB\)
+                            &ensp;<span style="color:var(--muted);font-size:.85em">（証明終）</span>
+                        </span>
+                    </div>
+                </div>
+                <button class="check-btn" onclick="checkAll('g6','r6')">答えを確認</button>
+                <button class="reset-btn" onclick="resetAll('g6','r6')">リセット</button>
+                <div class="check-msg" id="r6"></div>
+            </div>
+
+            <!-- Free -->
+            <div id="f6" style="display:none">
+                <div class="prob-box">
+                    <strong>【定理】</strong><br>
+                    円Oにおいて、弧ABに対する円周角\(\angle ACB\)は中心角\(\angle AOB\)の半分、
+                    すなわち \(\angle ACB = \dfrac{1}{2}\angle AOB\) であることを証明せよ。<br>
+                    （OがACBの内部にある場合を証明せよ。）
+                </div>
+                <textarea class="proof-ta" placeholder="証明を書く…"></textarea>
+                <br>
+                <button class="ans-btn" onclick="toggleAns('ma6',this)">模範解答を見る</button>
+                <div class="model-ans" id="ma6">
+                    <div class="model-ans-hd">模範解答</div>
+                    C を通る直径 CD を引く（O の反対側の点を D とする）。<br>
+                    \(OA = OC\)（半径）より \(\triangle OAC\) は二等辺三角形だから<br>
+                    &emsp;\(\angle OCA = \angle OAC\)&emsp;これを \(\alpha\) とおく。<br>
+                    \(\triangle OAC\) の外角より&ensp;\(\angle AOD = 2\alpha\)&emsp;&hellip;(1)<br>
+                    \(OB = OC\)（半径）より \(\triangle OBC\) は二等辺三角形だから<br>
+                    &emsp;\(\angle OCB = \angle OBC\)&emsp;これを \(\beta\) とおく。<br>
+                    \(\triangle OBC\) の外角より&ensp;\(\angle BOD = 2\beta\)&emsp;&hellip;(2)<br>
+                    (1)(2)より&emsp;\(\angle AOB = \angle AOD + \angle BOD = 2\alpha + 2\beta\)<br>
+                    一方&emsp;\(\angle ACB = \angle OCA + \angle OCB = \alpha + \beta\)<br>
+                    したがって&ensp;\(\angle AOB = 2\angle ACB\)、<br>
+                    すなわち&ensp;\(\angle ACB = \dfrac{1}{2}\angle AOB\)&emsp;<strong>（証明終）</strong>
+                </div>
+            </div>
+        </div><!-- /ex-block 6 -->
+
+    </div><!-- /#ex-wrap -->
+    </main>
+
+    <script>
+    // ── Mode switch ──────────────────────────────────────────
+    function setMode(m) {
+        document.getElementById('btn-guided').classList.toggle('active', m === 'guided');
+        document.getElementById('btn-free').classList.toggle('active', m === 'free');
+        [1, 2, 3, 4, 5, 6].forEach(n => {
+            document.getElementById('g' + n).style.display = m === 'guided' ? '' : 'none';
+            document.getElementById('f' + n).style.display = m === 'free'   ? '' : 'none';
+        });
+    }
+
+    // ── Answer normalise ─────────────────────────────────────
+    function norm(s) {
+        return s.trim().toLowerCase()
+            .replace(/\s+/g, '')
+            .replace(/[　]/g, '')
+            .replace(/²/g, '2')
+            .replace(/＝/g, '=');
+    }
+
+    // ── Check blanks in a group ──────────────────────────────
+    function checkAll(groupId, msgId) {
+        const inputs = document.querySelectorAll('#' + groupId + ' .blank');
+        let allOk = true, hasEmpty = false;
+        inputs.forEach(inp => {
+            const accepted = inp.dataset.ans.split(',').map(norm);
+            const val = norm(inp.value);
+            inp.classList.remove('ok', 'ng');
+            if (!val) { hasEmpty = true; allOk = false; return; }
+            const ok = accepted.some(a => val === a || a.includes(val) || val.includes(a));
+            inp.classList.add(ok ? 'ok' : 'ng');
+            if (!ok) allOk = false;
+        });
+        const el = document.getElementById(msgId);
+        if (hasEmpty) {
+            el.textContent = '空欄があります。すべて埋めてから確認してください。';
+            el.className = 'check-msg ng';
+        } else if (allOk) {
+            el.textContent = '✓ すべて正解！よくできました！';
+            el.className = 'check-msg ok';
+        } else {
+            el.textContent = '✕ 赤くなっているところを見直してください。';
+            el.className = 'check-msg ng';
+        }
+        MathJax.typesetPromise([document.getElementById(groupId)]);
+    }
+
+    function resetAll(groupId, msgId) {
+        document.querySelectorAll('#' + groupId + ' .blank').forEach(inp => {
+            inp.value = '';
+            inp.classList.remove('ok', 'ng');
+        });
+        const el = document.getElementById(msgId);
+        el.textContent = '';
+        el.className = 'check-msg';
+    }
+
+    // ── Toggle model answer ──────────────────────────────────
+    function toggleAns(id, btn) {
+        const el = document.getElementById(id);
+        el.classList.toggle('show');
+        btn.textContent = el.classList.contains('show') ? '模範解答を隠す' : '模範解答を見る';
+        if (el.classList.contains('show')) MathJax.typesetPromise([el]);
+    }
+
+    // ── Init MathJax ─────────────────────────────────────────
+    MathJax.startup.promise.then(() => {
+        MathJax.typesetPromise([document.getElementById('ex-wrap')]);
+    });
+    </script>
+</body>
+</html>

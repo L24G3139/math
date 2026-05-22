@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>前回の復習</title>
+        <link rel="stylesheet" href="review.css">
+        <script>MathJax = { startup: { typeset: false } };</script>
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </head>
+    <body>
+        <header>
+            <a href="class.html" class="back-link">← 授業ページに戻る</a>
+            <span class="header-title">前回の復習</span>
+        </header>
+
+        <main>
+            <div id="quiz-wrap">
+                <div id="progress-area">
+                    <span id="prog-label">問 <span id="current">1</span> / <span id="total"></span></span>
+                    <div id="progress-track"><div id="progress-fill"></div></div>
+                </div>
+
+                <div id="card">
+                    <div id="card-inner">
+                        <div id="question"></div>
+                        <div id="figure"></div>
+                    </div>
+                </div>
+
+                <div id="choices"></div>
+                <div id="feedback"></div>
+                <button id="next-btn">次の問題 →</button>
+            </div>
+
+            <div id="result-wrap">
+                <div id="result-emoji"></div>
+                <h2>お疲れさまでした！</h2>
+                <p class="result-score"><span id="score"></span> / <span id="total-r"></span> 正解</p>
+                <div class="result-btns">
+                    <button id="retry-btn">もう一度挑戦する</button>
+                    <a href="class.html" class="go-class">授業ページへ →</a>
+                </div>
+            </div>
+        </main>
+
+        <script src="review.js"></script>
+    </body>
+</html>
