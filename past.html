@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>過去資料</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="fontstyle.css">
+        <link rel="stylesheet" href="past.css">
+        <script>
+            MathJax = { tex: { inlineMath: [['$','$'],['\\(','\\)']] } };
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    </head>
+    <body class="sidebar">
+        <header>
+            <ul class="header-list">
+                <li id="header-list"><a href="index.html" style="color:#EEEDD7;text-decoration:none;">🏠 ホーム</a></li>
+                <li id="header-list"><a href="class.html" style="color:#EEEDD7;text-decoration:none;">📖 本時の学習</a></li>
+            </ul>
+        </header>
+
+        <main>
+            <p class="page-eyebrow">Archive</p>
+            <h1 class="page-title">過去資料</h1>
+            <p class="page-sub">過去の授業資料を確認できます</p>
+
+            <p class="list-label">授業一覧</p>
+            <div class="past-list" id="past-list">
+                <!-- schedule.json から動的に生成 -->
+            </div>
+
+            <div id="content-area">
+                <div class="content-header">
+                    <h2 class="content-header-title" id="content-title"></h2>
+                    <button class="btn-close" onclick="closeContent()">✕ 閉じる</button>
+                </div>
+                <div id="content-body"></div>
+            </div>
+        </main>
+
+        <footer></footer>
+
+        <script>
+            let activeItem = null;
+
+            fetch('schedule.json')
+                .then(r => r.json())
+                .then(schedule => {
+                    const list = document.getElementById('past-list');
+                    [...schedule].reverse().forEach(entry => {
+                        const item = document.createElement('div');
+                        item.className = 'past-item';
+                        item.dataset.file  = entry.file;
+                        item.dataset.title = entry.title;
+
+                        const month = entry.date.slice(0, 2);
+                        const day   = entry.date.slice(2, 4);
+
+                        item.innerHTML = `
+                            <span class="past-badge">${entry.note}</span>
+                            <span class="past-date">${parseInt(month)}月${parseInt(day)}日</span>
+                            <span class="past-title">${entry.title}</span>
+                            <span class="past-arrow">→</span>
+                        `;
+
+                        fetch(entry.file, { method: 'HEAD' })
+                            .then(r => {
+                                if (!r.ok) item.classList.add('unavailable');
+                                else item.addEventListener('click', () => loadContent(item));
+                            })
+                            .catch(() => item.classList.add('unavailable'));
+
+                        list.appendChild(item);
+                    });
+                })
+                .catch(() => {
+                    document.getElementById('past-list').innerHTML =
+                        '<p style="color:#7aaa7a;font-size:0.9em;padding:8px 0;">schedule.json が見つかりません。</p>';
+                });
+
+            function loadContent(item) {
+                if (activeItem) activeItem.classList.remove('active');
+                item.classList.add('active');
+                activeItem = item;
+
+                const file  = item.dataset.file;
+                const title = item.dataset.title;
+
+                fetch(file)
+                    .then(r => r.text())
+                    .then(md => {
+                        document.getElementById('content-title').textContent = title;
+                        const body = document.getElementById('content-body');
+                        body.innerHTML = marked.parse(md);
+                        document.getElementById('content-area').classList.add('visible');
+                        document.getElementById('content-area').scrollIntoView({ behavior: 'smooth' });
+                        MathJax.typesetPromise([body]);
+                    });
+            }
+
+            function closeContent() {
+                document.getElementById('content-area').classList.remove('visible');
+                if (activeItem) { activeItem.classList.remove('active'); activeItem = null; }
+            }
+        </script>
+    </body>
+</html>

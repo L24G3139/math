@@ -195,3 +195,214 @@ details[open].proof-reveal > summary::before { content:"▼ "; }
 @media(max-width:540px) {
     .ex2-fig { float:none; width:130px; margin:0 auto 10px; }
 }
+
+/* ════════════════════════════════════════
+   #main-content — マークダウンレンダリング
+════════════════════════════════════════ */
+#main-content {
+    padding: 24px 5% 80px;
+    line-height: 1.9;
+}
+
+/* 見出し */
+#main-content h2 {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: #e9cc33;
+    padding: 7px 0 7px 14px;
+    border-left: 3px solid #e9cc33;
+    background: rgba(233,204,51,0.05);
+    border-radius: 0 5px 5px 0;
+    margin: 32px 0 14px;
+}
+
+#main-content h3 {
+    font-size: 1.0em;
+    font-weight: 600;
+    color: #a8c8a0;
+    margin: 24px 0 10px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+/* テキスト */
+#main-content p {
+    color: #d8e8d4;
+    margin: 0 0 12px;
+}
+
+#main-content strong { color: #e9cc33; }
+#main-content em     { color: #9fd89f; font-style: italic; }
+
+/* 定理ボックス（blockquote） */
+#main-content blockquote {
+    background: rgba(233,204,51,0.06);
+    border: 1.5px solid rgba(233,204,51,0.45);
+    border-radius: 7px;
+    padding: 12px 18px;
+    margin: 4px 0 18px;
+    color: #f0eacc;
+}
+
+#main-content blockquote p    { margin: 0; color: #f0eacc; }
+#main-content blockquote strong { color: #e9cc33; font-size: 0.82em; letter-spacing: 0.06em; }
+
+/* 番号付きリスト（証明ステップ） */
+#main-content ol {
+    list-style: none;
+    padding-left: 0;
+    margin: 0 0 14px;
+    counter-reset: proof-step;
+}
+
+#main-content ol > li {
+    counter-increment: proof-step;
+    position: relative;
+    padding: 10px 14px 10px 46px;
+    margin-bottom: 8px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 7px;
+    color: #d8e8d4;
+    line-height: 1.85;
+}
+
+#main-content ol > li::before {
+    content: counter(proof-step);
+    position: absolute;
+    left: 13px;
+    top: 13px;
+    width: 22px;
+    height: 22px;
+    background: rgba(233,204,51,0.12);
+    border: 1.5px solid rgba(233,204,51,0.45);
+    border-radius: 50%;
+    text-align: center;
+    line-height: 20px;
+    font-size: 0.76em;
+    font-weight: 700;
+    color: #e9cc33;
+}
+
+/* 箇条書き */
+#main-content ul {
+    list-style: none;
+    padding-left: 4px;
+    margin: 0 0 12px;
+}
+
+#main-content ul > li {
+    position: relative;
+    padding: 3px 0 3px 20px;
+    color: #d8e8d4;
+    line-height: 1.8;
+}
+
+#main-content ul > li::before {
+    content: '›';
+    position: absolute;
+    left: 5px;
+    color: #e9cc33;
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+/* 区切り線 */
+#main-content hr {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin: 30px 0;
+}
+
+/* 演習・解答の折りたたみ */
+#main-content details {
+    background: rgba(0,0,0,0.28);
+    border: 1.5px solid rgba(233,204,51,0.22);
+    border-radius: 9px;
+    margin: 12px 0;
+    overflow: hidden;
+    transition: border-color 0.15s;
+}
+
+#main-content details:hover {
+    border-color: rgba(233,204,51,0.45);
+}
+
+#main-content details > summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 11px 16px;
+    color: #e9cc33;
+    font-weight: 600;
+    font-size: 0.88em;
+    transition: background 0.15s;
+}
+
+#main-content details > summary::-webkit-details-marker { display: none; }
+#main-content details > summary::before { content: "▶ "; font-size: 0.75em; }
+#main-content details[open] > summary {
+    background: rgba(233,204,51,0.07);
+    border-bottom: 1px solid rgba(233,204,51,0.14);
+}
+#main-content details[open] > summary::before { content: "▼ "; }
+#main-content details > *:not(summary) { padding: 12px 16px 14px; }
+
+/* ステップ捲り */
+.step-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 6px 0;
+    flex-wrap: wrap;
+}
+
+.step-indicator {
+    font-size: 0.76em;
+    color: #7aaa7a;
+    font-weight: 600;
+    min-width: 54px;
+    font-family: monospace;
+}
+
+.step-next-btn {
+    background: rgba(233,204,51,0.12);
+    border: 1.5px solid rgba(233,204,51,0.6);
+    border-radius: 20px;
+    color: #e9cc33;
+    font-size: 0.78em;
+    font-weight: 700;
+    padding: 4px 16px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+}
+
+.step-next-btn:hover:not(:disabled) {
+    background: rgba(233,204,51,0.25);
+    transform: translateX(2px);
+}
+
+.step-next-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.step-reset-btn {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    color: rgba(255,255,255,0.4);
+    font-size: 0.76em;
+    padding: 4px 12px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+}
+
+.step-reset-btn:hover { border-color: rgba(233,204,51,0.5); color: #e9cc33; }
+
+.step-li-hidden { display: none; }
+
+.step-li-visible {
+    animation: stepReveal 0.3s cubic-bezier(.22,.68,0,1.2);
+}
+
+@keyframes stepReveal {
+    from { opacity: 0; transform: translateX(-10px); }
+    to   { opacity: 1; transform: translateX(0); }
+}

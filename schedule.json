@@ -1,0 +1,31 @@
+[
+  {
+    "date": "0516",
+    "title": "円周角の定理・接弦定理",
+    "subtitle": "円と角度の基本定理を証明する",
+    "file": "class/class_0516.md",
+    "note": "第1回"
+  },
+  {
+    "date": "0523",
+    "title": "接線の長さと方べきの定理",
+    "subtitle": "接線・割線と円の関係を証明する",
+    "file": "class/class_0523.md",
+    "note": "第2回"
+  },
+  {
+    "date": "0523",
+    "title": "復習問題（5月23日）",
+    "subtitle": "証明の穴埋め 5問 ＋ 数値計算 5問",
+    "file": "class/review_0523.md",
+    "note": "復習"
+  },
+  {
+    "date": "0530",
+    "title": "方べきの定理（穴埋め演習）",
+    "subtitle": "証明の流れを自分の手で確かめる",
+    "file": "class/class_0530.md",
+    "note": "第3回",
+    "current": true
+  }
+]

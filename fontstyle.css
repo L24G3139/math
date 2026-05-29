@@ -1,5 +1,8 @@
 * {
-    color: #EEEDD7;
-    font-family:'UD デジタル 教科書体 N-R';
+    font-family: 'UD デジタル 教科書体 N-R', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
 }
 
+/* グローバル文字色：ベース */
+body {
+    color: #dde8d4;
+}

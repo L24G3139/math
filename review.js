@@ -26,7 +26,86 @@ function svgWrap(content, w=200, h=160) {
     return `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="${SVG_STYLE}">${content}</svg>`;
 }
 
-// ── SVG figures for each question ────────────────────────────
+// ── SVG figures ───────────────────────────────────────────────
+
+// 接線の等長：外部の点Pから2本の接線 PA=7, PB=?
+function svgTangentEqual() {
+    const parts = [
+        circle(80,65,35),
+        dot(15,65,3,'#fff'), label(4,69,'P','middle','#fff'),
+        dot(80,65,2,'#fff'), label(83,63,'O','start','#aaa',10),
+        dot(61,36,2.5,'#e9cc33'), label(55,30,'A','middle','#e9cc33'),
+        dot(61,94,2.5,'#e9cc33'), label(55,106,'B','middle','#e9cc33'),
+        line(15,65,61,36,'#e9cc33',1.8),
+        line(15,65,61,94,'#e9cc33',1.8),
+        `<line x1="80" y1="65" x2="61" y2="36" stroke="#888" stroke-width="1" stroke-dasharray="3,3"/>`,
+        `<line x1="80" y1="65" x2="61" y2="94" stroke="#888" stroke-width="1" stroke-dasharray="3,3"/>`,
+        `<text x="20" y="47" font-size="10" fill="#f0e8cc">PA=7</text>`,
+        `<text x="20" y="87" font-size="10" fill="#e9cc33">PB=?</text>`,
+    ];
+    return svgWrap(parts.join(''), 130, 130);
+}
+
+// 内接円：三角形とラベル（AF, BD, CE）
+function svgInscribed(afLabel, bdLabel, ceLabel, queryLabel) {
+    const parts = [
+        `<polygon points="65,15 10,120 130,120" fill="none" stroke="#3b6fd4" stroke-width="1.5"/>`,
+        `<circle cx="71" cy="81" r="28" fill="rgba(100,160,100,0.10)" stroke="#a8c8a0" stroke-width="1" stroke-dasharray="4,3"/>`,
+        label(60,10,'A'), label(2,128,'B','start'), label(132,128,'C','start'),
+        dot(44,54,2,'#e9cc33'), label(36,52,'F','middle','#e9cc33',10),
+        dot(77,120,2,'#e9cc33'), label(74,132,'D','middle','#e9cc33',10),
+        dot(93,60,2,'#e9cc33'), label(96,59,'E','start','#e9cc33',10),
+        `<text x="36" y="88" font-size="9" fill="#f0e8cc">${afLabel}</text>`,
+        `<text x="18" y="112" font-size="9" fill="#f0e8cc">${bdLabel}</text>`,
+        `<text x="96" y="108" font-size="9" fill="#f0e8cc">${ceLabel}</text>`,
+        queryLabel ? `<text x="55" y="132" font-size="9" fill="#e9cc33">${queryLabel}</text>` : '',
+    ];
+    return svgWrap(parts.join(''), 150, 140);
+}
+
+// 接線の長さ：直角三角形 OTP
+function svgTangentRight(opLabel, rLabel, ptLabel) {
+    const parts = [
+        circle(110,75,45),
+        dot(110,75,3,'#fff'), label(114,73,'O','start','#fff'),
+        dot(20,75,3,'#fff'),  label(8,79,'P','middle','#fff'),
+        dot(72,36,2.5,'#e9cc33'), label(68,28,'T','middle','#e9cc33'),
+        line(20,75,72,36,'#e9cc33',1.8),
+        `<line x1="110" y1="75" x2="72" y2="36" stroke="#888" stroke-width="1" stroke-dasharray="3,3"/>`,
+        `<line x1="20" y1="75" x2="110" y2="75" stroke="#ccc" stroke-width="0.8" stroke-dasharray="2,3"/>`,
+        `<path d="M73,42 L67,39 L70,33" fill="none" stroke="#e9cc33" stroke-width="0.9"/>`,
+        `<text x="55" y="73" font-size="10" fill="#ccc">${opLabel}</text>`,
+        `<text x="104" y="56" font-size="10" fill="#aaa">${rLabel}</text>`,
+        `<text x="25" y="56" font-size="10" fill="#e9cc33">${ptLabel}</text>`,
+    ];
+    return svgWrap(parts.join(''), 170, 120);
+}
+
+// 内部の点：2弦が交わる
+function svgInternalChords(paLabel='PA', pbLabel='PB', pcLabel='PC', pdLabel='PD') {
+    const cx=100,cy=80,r=55;
+    const [Ax,Ay]=pt(cx,cy,r,200), [Bx,By]=pt(cx,cy,r,20);
+    const [Cx,Cy]=pt(cx,cy,r,150), [Dx,Dy]=pt(cx,cy,r,320);
+    const Px=95, Py=73;
+    const parts = [
+        circle(cx,cy,r),
+        line(Ax,Ay,Bx,By,'#88aaff',1.8),
+        line(Cx,Cy,Dx,Dy,'#88aaff',1.8),
+        dot(Ax,Ay), dot(Bx,By), dot(Cx,Cy), dot(Dx,Dy),
+        dot(Px,Py,3,'#e9cc33'),
+        label(Ax-5,Ay+10,'A','end'), label(Bx+5,By+4,'B','start'),
+        label(Cx-5,Cy-5,'C','end'), label(Dx+5,Dy+8,'D','start'),
+        label(Px-9,Py-4,'P','middle','#e9cc33'),
+        `<text x="${(Ax+Px)/2-14}" y="${(Ay+Py)/2+4}" font-size="9" fill="#f0e8cc">${paLabel}</text>`,
+        `<text x="${(Bx+Px)/2+2}" y="${(By+Py)/2}" font-size="9" fill="#f0e8cc">${pbLabel}</text>`,
+        `<text x="${(Cx+Px)/2-14}" y="${(Cy+Py)/2-2}" font-size="9" fill="#f0e8cc">${pcLabel}</text>`,
+        `<text x="${(Dx+Px)/2+2}" y="${(Dy+Py)/2+8}" font-size="9" fill="#f0e8cc">${pdLabel}</text>`,
+    ];
+    return svgWrap(parts.join(''));
+}
+
+// ── Question data ─────────────────────────────────────────────
+// （以下は旧問題。新しい questions 配列で上書き）
 
 // Q1: 接弦定理 - tangent at A (horizontal, bottom), chord AB, inscribed angle ACB
 function svgQ1() {
@@ -340,15 +419,94 @@ function svgQ11() {
         '外(3 × 12 = 36)', '内(x × x = x²)');
 }
 
-// ── Question data ─────────────────────────────────────────────
+// ── Question data（5月23日：接線の長さ・内部の点の方べき）────
 const questions = [
     {
-        q: `円Oの点Aにおける接線\\(\\ell\\)と弦ABがなす角が \\(70°\\) のとき、
-            弧ABに対する円周角 \\(\\angle ACB\\) はいくらか？`,
-        choices: ['\\(35°\\)', '\\(70°\\)', '\\(140°\\)', '\\(110°\\)'],
+        q: `円 $O$ の外の点 $P$ から2本の接線を引き、接点を $A$, $B$ とする。<br>
+            $PA = 7$ のとき、$PB$ はいくらか？`,
+        choices: ['\\(3\\)', '\\(5\\)', '\\(7\\)', '\\(14\\)'],
+        correct: 2,
+        exp: '接線の等長より、同じ外部の点から引いた2本の接線の長さは等しい。よって \\(PB = PA = 7\\)',
+        svg: svgTangentEqual()
+    },
+    {
+        q: `接線の等長の証明で用いる合同条件はどれか？`,
+        choices: [
+            '直角三角形の斜辺と他の1辺がそれぞれ等しい',
+            '2辺とその夾角がそれぞれ等しい',
+            '3辺がそれぞれ等しい',
+            '1辺とその両端の角がそれぞれ等しい'
+        ],
+        correct: 0,
+        exp: '接線は半径と垂直なので \\(\\angle OAP = \\angle OBP = 90°\\)（直角）。斜辺 \\(OP\\) は共通、\\(OA = OB\\)（半径）。よって<strong>直角三角形の斜辺と他の1辺</strong>で \\(\\triangle OAP \\equiv \\triangle OBP\\)',
+        svg: null
+    },
+    {
+        q: `\\(\\triangle ABC\\) の内接円が辺 $BC$, $CA$, $AB$ と接する点を $D$, $E$, $F$ とする。<br>
+            $AF = 4$、$BD = 6$、$CE = 3$ のとき、$BC$ はいくらか？`,
+        choices: ['\\(7\\)', '\\(8\\)', '\\(9\\)', '\\(10\\)'],
+        correct: 2,
+        exp: '接線の等長より \\(CD = CE = 3\\)。よって \\(BC = BD + DC = 6 + 3 = 9\\)',
+        svg: svgInscribed('AF=4','BD=6','CE=3','BC=?')
+    },
+    {
+        q: `\\(\\triangle ABC\\) の内接円と辺 $BC$, $CA$, $AB$ との接点を $D$, $E$, $F$ とする。<br>
+            $AB=10$、$BC=8$、$CA=6$ のとき、$BD$ はいくらか？`,
+        choices: ['\\(4\\)', '\\(5\\)', '\\(6\\)', '\\(8\\)'],
+        correct: 2,
+        exp: '半周長 \\(s = \\dfrac{10+8+6}{2} = 12\\)。接線の等長の公式より \\(BD = s - CA = 12 - 6 = 6\\)',
+        svg: svgInscribed('AB=10','BC=8','CA=6','BD=?')
+    },
+    {
+        q: `半径 \\(r = 5\\) の円 \\(O\\) の外の点 \\(P\\) から接線を引き、接点を \\(T\\) とする。<br>
+            \\(OP = 13\\) のとき、接線の長さ \\(PT\\) はいくらか？`,
+        choices: ['\\(8\\)', '\\(10\\)', '\\(12\\)', '\\(14\\)'],
+        correct: 2,
+        exp: '\\(OT \\perp PT\\) より三平方の定理を使うと \\(PT^2 = OP^2 - OT^2 = 169 - 25 = 144\\)。よって \\(PT = 12\\)',
+        svg: svgTangentRight('OP=13','r=5','PT=?')
+    },
+    {
+        q: `半径 \\(r = 8\\) の円 \\(O\\) の外の点 \\(P\\) から接線 \\(PA\\) を引くと \\(PA = 6\\)。<br>
+            \\(OP\\) はいくらか？`,
+        choices: ['\\(8\\)', '\\(10\\)', '\\(12\\)', '\\(14\\)'],
         correct: 1,
-        exp: '接弦定理より、接線と弦のなす角 ＝ その弦に対する円周角。よって \\(\\angle ACB = 70°\\)',
-        svg: svgQ1()
+        exp: '\\(OA \\perp PA\\) より \\(OP^2 = PA^2 + OA^2 = 36 + 64 = 100\\)。よって \\(OP = 10\\)',
+        svg: svgTangentRight('OP=?','r=8','PA=6')
+    },
+    {
+        q: `円内の点 \\(P\\) を通る2弦 \\(AB\\), \\(CD\\) において \\(PA = 3\\)、\\(PB = 8\\)、\\(PC = 4\\)。<br>
+            \\(PD\\) はいくらか？`,
+        choices: ['\\(4\\)', '\\(5\\)', '\\(6\\)', '\\(8\\)'],
+        correct: 2,
+        exp: '方べきの定理（内部）より \\(PA \\cdot PB = PC \\cdot PD\\)。\\(3 \\times 8 = 4 \\times PD\\) より \\(PD = 6\\)',
+        svg: svgInternalChords('PA=3','PB=8','PC=4','PD=?')
+    },
+    {
+        q: `円内の点 \\(P\\) を通る2弦 \\(AB\\), \\(CD\\) において \\(PA = 2\\)、\\(PB = 9\\)。<br>
+            \\(PC \\cdot PD\\) はいくらか？`,
+        choices: ['\\(11\\)', '\\(14\\)', '\\(16\\)', '\\(18\\)'],
+        correct: 3,
+        exp: '方べきの定理より \\(PC \\cdot PD = PA \\cdot PB = 2 \\times 9 = 18\\)（弦の向きによらず積は一定）',
+        svg: svgInternalChords('PA=2','PB=9','PC','PD')
+    },
+    {
+        q: `内部の点の方べきの定理（\\(PA \\cdot PB = PC \\cdot PD\\)）の証明で使う定理はどれか？`,
+        choices: [
+            '接弦定理',
+            '円周角の定理（同じ弧に対する円周角は等しい）',
+            '中心角は円周角の2倍',
+            '三平方の定理'
+        ],
+        correct: 1,
+        exp: '\\(\\triangle PAC \\sim \\triangle PDB\\) を示すために、弧 \\(BC\\) に対する円周角 \\(\\angle PAC = \\angle PDB\\) を使う。これは<strong>円周角の定理</strong>による。',
+        svg: svgInternalChords()
+    },
+    {
+        q: `半径 \\(r = 6\\)、\\(OP = 4\\)（内部）のとき、\\(PA \\cdot PB\\) はいくらか？`,
+        choices: ['\\(16\\)', '\\(20\\)', '\\(32\\)', '\\(36\\)'],
+        correct: 1,
+        exp: '点 \\(P\\) が円の内部のとき \\(PA \\cdot PB = r^2 - d^2 = 6^2 - 4^2 = 36 - 16 = 20\\)',
+        svg: svgInternalChords('PA','PB','PC','PD')
     },
     {
         q: `円において、弧ABに対する中心角 \\(\\angle AOB = 120°\\) のとき、
@@ -370,85 +528,6 @@ const questions = [
         exp: '円周角の定理より、同じ弧に対する円周角はすべて等しい。',
         svg: svgQ3()
     },
-    {
-        q: `円Oの点Aにおける接線\\(\\ell\\)と弦ABがなす角が \\(45°\\) のとき、
-            弦ABに対する中心角 \\(\\angle AOB\\) はいくらか？`,
-        choices: ['\\(45°\\)', '\\(90°\\)', '\\(135°\\)', '\\(22.5°\\)'],
-        correct: 1,
-        exp: '補助線OA, OBを引く。接線は半径と垂直なので \\(\\angle OAℓ = 90°\\)。'
-           + 'よって \\(\\angle OAB = 90° - 45° = 45°\\)。'
-           + 'OA = OB（半径）より \\(\\triangle OAB\\) は二等辺三角形なので \\(\\angle OBA = \\angle OAB = 45°\\)。'
-           + '三角形の内角の和より \\(\\angle AOB = 180° - 45° - 45° = 90°\\)',
-        svg: svgQ4()
-    },
-    {
-        q: `円周角 \\(\\angle ACB = 35°\\) のとき、同じ弧ABに対して
-            弧AB上にない別の点Dからの円周角 \\(\\angle ADB\\) はいくらか？`,
-        choices: ['\\(70°\\)', '\\(17.5°\\)', '\\(35°\\)', '\\(145°\\)'],
-        correct: 2,
-        exp: '円周角の定理より、同じ弧に対する円周角はすべて等しい。よって \\(\\angle ADB = 35°\\)',
-        svg: svgQ5()
-    },
-    {
-        q: `\\(2 : 3 = x : 9\\) のとき、\\(x\\) はいくらか？`,
-        choices: ['\\(4\\)', '\\(5\\)', '\\(6\\)', '\\(8\\)'],
-        correct: 2,
-        exp: '比例式では<strong>外項の積 ＝ 内項の積</strong>（うちうち外外）が成り立つ。'
-           + '外項: \\(2 \\times 9 = 18\\)、内項: \\(3 \\times x = 18\\)。'
-           + 'よって \\(x = 6\\)',
-        svg: svgQ10()
-    },
-    {
-        q: `\\(3 : x = x : 12\\) のとき、\\(x\\) はいくらか？（\\(x > 0\\)）`,
-        choices: ['\\(4\\)', '\\(6\\)', '\\(9\\)', '\\(36\\)'],
-        correct: 1,
-        exp: '外項の積 ＝ 内項の積 より \\(3 \\times 12 = x \\times x\\)。'
-           + 'すなわち \\(x^2 = 36\\)。\\(x > 0\\) より \\(x = 6\\)。'
-           + '（このような \\(x\\) を比例中項という）',
-        svg: svgQ11()
-    },
-    {
-        q: `\\(\\triangle ABC \\backsim \\triangle DEF\\) で、\\(AB = 6\\)、\\(BC = 8\\)、\\(DE = 9\\) のとき、
-            \\(EF\\) はいくらか？`,
-        choices: ['\\(10\\)', '\\(11\\)', '\\(12\\)', '\\(14\\)'],
-        correct: 2,
-        exp: '相似比 \\(AB : DE = 6 : 9 = 2 : 3\\)。対応する辺の比は等しいので \\(BC : EF = 2 : 3\\)。'
-           + 'よって \\(EF = 8 \\times \\dfrac{3}{2} = 12\\)',
-        svg: svgQ8()
-    },
-    {
-        q: `相似比が \\(2 : 3\\) の2つの三角形の<span style="font-weight:600">面積比</span>はいくらか？`,
-        choices: ['\\(2 : 3\\)', '\\(4 : 6\\)', '\\(4 : 9\\)', '\\(8 : 27\\)'],
-        correct: 2,
-        exp: '面積比は相似比の<em>2乗</em>になる。相似比 \\(2:3\\) → 面積比 \\(2^2 : 3^2 = 4 : 9\\)。'
-           + '（体積比なら3乗で \\(8:27\\) になる）',
-        svg: svgQ9()
-    },
-    {
-        q: `次のうち、三角形の<span style="font-weight:600">相似条件</span>として正しいものはどれか？`,
-        choices: [
-            '3組の辺がすべて等しい',
-            '3組の辺の比がすべて等しい',
-            '1組の辺の比とその両端の角が等しい',
-            '2組の辺の比が等しい'
-        ],
-        correct: 1,
-        exp: '三角形の相似条件は ①3辺比がすべて等しい（SSS） ②2辺の比とその間の角が等しい（SAS） ③2組の角がそれぞれ等しい（AA）の3つ。「3辺がすべて等しい」は<em>合同</em>条件。',
-        svg: svgQ6()
-    },
-    {
-        q: `\\(\\triangle ABC\\) と \\(\\triangle DEF\\) において、\\(\\angle A = \\angle D\\)、\\(\\angle B = \\angle E\\) のとき、
-            用いた相似条件はどれか？`,
-        choices: [
-            '3組の辺の比がすべて等しい（SSS相似）',
-            '2組の辺の比とその間の角が等しい（SAS相似）',
-            '2組の角がそれぞれ等しい（AA相似）',
-            '1組の辺が等しく1組の角が等しい'
-        ],
-        correct: 2,
-        exp: '2組の角が等しければ残りの1組も自動的に等しくなるため、AA相似（2組の角がそれぞれ等しい）が成立する。',
-        svg: svgQ7()
-    }
 ];
 
 // ── State ────────────────────────────────────────────────────
@@ -502,7 +581,8 @@ resultWrap.insertBefore(resultComboEl, resultBtns);
 // ── Audio ─────────────────────────────────────────────────────
 function playSound(type) {
     try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const AudioCtx = window.AudioContext ?? /** @type {typeof AudioContext} */ (window['webkitAudioContext']);
+        const ctx = new AudioCtx();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.connect(gain);

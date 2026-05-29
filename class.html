@@ -7,595 +7,188 @@
 
         <link rel="stylesheet" href="style.css">
         <link rel="stylesheet" href="fontstyle.css">
+        <style>
+            /* ── テンプレートヘッダー ── */
+            #class-meta {
+                padding: 48px 5% 0;
+                display: none;
+                border-bottom: 2px solid rgba(233,204,51,0.2);
+                margin-bottom: 0;
+                background: rgba(0,0,0,0.15);
+            }
+
+            #class-meta.visible { display: block; }
+
+            .meta-eyebrow {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 12px;
+            }
+
+            .meta-note {
+                font-size: 0.72em;
+                font-weight: 700;
+                color: #1c3c1c;
+                background: #e9cc33;
+                border-radius: 3px;
+                padding: 2px 10px;
+                letter-spacing: 0.05em;
+            }
+
+            .meta-date {
+                font-size: 0.8em;
+                color: #7aaa7a;
+                letter-spacing: 0.04em;
+            }
+
+            .meta-title {
+                font-size: 1.7em;
+                font-weight: 800;
+                color: #f2ecce;
+                margin: 0 0 8px;
+                text-align: center;
+                letter-spacing: 0.03em;
+            }
+
+            .meta-subtitle {
+                font-size: 0.85em;
+                color: #7aaa7a;
+                margin: 0 0 24px;
+                text-align: center;
+            }
+
+            /* markdown の先頭 h1 はテンプレートで表示するため非表示 */
+            #main-content > h1:first-child { display: none; }
+        </style>
         <script>
             MathJax = {
-                tex: {
-                    inlineMath: [['$', '$'], ['\\(', '\\)']]
-                }
+                tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
             };
         </script>
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     </head>
     <body class="sidebar">
         <header>
             <ul class="header-list">
                 <li id="header-list"><a href="index.html" style="color:#fff;text-decoration:none;">🏠 ホーム</a></li>
-                <li id="header-list"><a href="exercise.html" style="color:#fff;text-decoration:none;">✏️ 演習</a></li>
+                <li id="header-list"><a href="past.html"  style="color:#fff;text-decoration:none;">📂 過去資料</a></li>
             </ul>
         </header>
-        <main>
-            <h1>接線の長さと方べきの定理</h1>
-            <div class="columns">
-                <div class="col">
-                    <div class="review-section">
-                        <h2>前回の復習</h2>
-                        <p>本時の証明を円滑に進めるため、導入部分で以下の既習事項をフラッシュカード形式などで確認します。</p>
-                        <a href="review.html">前回の復習</a>
-                    </div>
-                    <hr>
-                    <div class="purpose-section">
-                        <h2>目標</h2>
-                        <ul class="purpose-list">
-                            <li>接線の長さを求められる</li>
-                            <li>方べきの定理を用いて、円の弦の長さを求められる</li>
-                        </ul>
-                    </div>
-                    <hr>
-                    <div class="main1-section">
-                        <h2>接線の長さ</h2>
-                        <div class="theorem-box">
-                            円の外部の1点Pからその円に引いた2本の接線において、点Pから2つの接点S, Tまでの距離が等しい。すなわち、\(PT=PS\)
-                        </div>
-                    </div>
-                    <div class="proof-full">
-                        <p>円の中心を $O$ とし、$\triangle POS$ と $\triangle POT$ において考える。</p>
-                        <ol>
-                            <li><strong>接線の性質による直角の特定</strong>:<br>
-                                直線 $PS, PT$ は円 $O$ に対する接線であり、接点を通る半径は接線と垂直に交わる。<br>
-                                したがって、
-                                $$\angle PSO = \angle PTO = 90^\circ \quad \cdots (1)$$
-                                これにより、$\triangle POS$ と $\triangle POT$ はともに<strong>直角三角形</strong>である。
-                            </li>
-                            <li><strong>辺の長さの比較</strong>:
-                                <ul>
-                                    <li>共通の斜辺： $OP = OP \quad \cdots (2)$</li>
-                                    <li>円 $O$ の半径： $OS = OT \quad \cdots (3)$</li>
-                                </ul>
-                            </li>
-                            <li><strong>合同の判定</strong>:<br>
-                                (1), (2), (3) より、<em>直角三角形の斜辺と他の1辺がそれぞれ等しい</em>ので、
-                                $$\triangle POS \equiv \triangle POT$$
-                                合同な図形の対応する辺の長さは等しいから、
-                                $$PS = PT$$
-                                <p class="proof-end">（証明終）</p>
-                            </li>
-                        </ol>
-                    </div>
-                    <div class="inportance">
-                            <ol>
-                                <li><span class="enphasis">垂直の原則</span>：円の接線は、その接点を通る半径と垂直に交わる。</li>
-                                <li><span class="enphasis">等長の原則</span>：円の外の1点からその円に引いた2本の接線の長さは等しい。</li>
-                                <li><span class="enphasis">対称性の原則</span>：円の外の点と中心を結ぶ線分は、2本の接線がなす角を二等分し、接点同士を結ぶ弦を垂直に二等分する。</li>
-                            </ol>
-                        </div>
-                    <a href="exercise.html">以前までの証明</a>
-                    <!-- ══ 演習問題① ══ -->
-                    <div class="exercise1-section">
-                        <details>
-                            <summary><h3 class="exercise1-h3">演習問題①</h3></summary>
-                            <ol class="ex2-problem">
 
-                                <!-- ── 問1 ── -->
-                                <li>
-                                    <div class="ex2-fig">
-                                        <!--
-                                            Circle O=(80,65) r=35  P=(15,65)
-                                            Tangent points: A≈(46,51), B≈(46,79) (symmetric)
-                                            Exact: cosα=−7/13, sinα=±2√30/13
-                                            A=(80+35·(−7/13), 65+35·(−2√30/13))=(61.15,35.51)→(61,36)
-                                            B=(61.15, 94.49)→(61,94)
-                                        -->
-                                        <svg viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg" style="font-family:serif">
-                                            <circle cx="80" cy="65" r="35" fill="rgba(100,160,100,0.12)" stroke="#88aaff" stroke-width="1.5"/>
-                                            <!-- P -->
-                                            <circle cx="15" cy="65" r="3" fill="#fff"/>
-                                            <text x="4" y="69" font-size="11" fill="#fff" font-style="italic">P</text>
-                                            <!-- O -->
-                                            <circle cx="80" cy="65" r="2" fill="#fff"/>
-                                            <text x="83" y="63" font-size="10" fill="#aaa" font-style="italic">O</text>
-                                            <!-- Tangent point A (upper) -->
-                                            <circle cx="61" cy="36" r="2.5" fill="#e9cc33"/>
-                                            <text x="55" y="30" font-size="11" fill="#e9cc33" font-style="italic">A</text>
-                                            <!-- Tangent point B (lower) -->
-                                            <circle cx="61" cy="94" r="2.5" fill="#e9cc33"/>
-                                            <text x="55" y="106" font-size="11" fill="#e9cc33" font-style="italic">B</text>
-                                            <!-- Tangent lines P→A and P→B -->
-                                            <line x1="15" y1="65" x2="61" y2="36" stroke="#e9cc33" stroke-width="1.8"/>
-                                            <line x1="15" y1="65" x2="61" y2="94" stroke="#e9cc33" stroke-width="1.8"/>
-                                            <!-- Radii OA and OB (dashed) -->
-                                            <line x1="80" y1="65" x2="61" y2="36" stroke="#aaa" stroke-width="1" stroke-dasharray="3,3"/>
-                                            <line x1="80" y1="65" x2="61" y2="94" stroke="#aaa" stroke-width="1" stroke-dasharray="3,3"/>
-                                            <!-- PA=8 label -->
-                                            <text x="22" y="47" font-size="10" fill="#f0e8cc">PA=8</text>
-                                        </svg>
-                                    </div>
-                                    <div class="proof-task">
-                                        <span class="enphasis">問1　接線の長さ</span><br>
-                                        円 O の外にある点 P から円 O に2つの接線を引き、その接点をそれぞれ A, B とする。\(PA = 8\) であるとき、\(PB\) の長さを求めよ。
-                                    </div>
-                                    <details class="proof-reveal">
-                                        <summary>答えを見る</summary>
-                                        <div class="proof-full">\(PB = 8\)</div>
-                                    </details>
-                                    <hr>
-                                </li>
-
-                                <!-- ── 問2 ── -->
-                                <li>
-                                    <div class="ex2-fig">
-                                        <!--
-                                            Triangle A=(65,15) B=(10,120) C=(130,120)
-                                            Tangent lengths: AF=AE=3, BF=BD=5, CD=CE=4
-                                            AB=8, BC=9, CA=7
-                                            F on AB: F=A+(3/8)(B-A)=(44,54)
-                                            D on BC: D=B+(5/9)(C-B)=(77,120)
-                                            E on CA: E=C+(4/7)(A-C)=(93,60)
-                                            Incenter I=(71,81)
-                                        -->
-                                        <svg viewBox="0 0 150 140" xmlns="http://www.w3.org/2000/svg" style="font-family:serif">
-                                            <!-- Triangle -->
-                                            <polygon points="65,15 10,120 130,120" fill="none" stroke="#88aaff" stroke-width="1.5"/>
-                                            <!-- Incircle (visual r≈28) -->
-                                            <circle cx="71" cy="81" r="28" fill="rgba(100,160,100,0.10)" stroke="#a8c8a0" stroke-width="1" stroke-dasharray="4,3"/>
-                                            <!-- Vertices -->
-                                            <text x="60" y="10" font-size="11" fill="#fff" font-style="italic">A</text>
-                                            <text x="2"  y="128" font-size="11" fill="#fff" font-style="italic">B</text>
-                                            <text x="132" y="128" font-size="11" fill="#fff" font-style="italic">C</text>
-                                            <!-- Tangent points -->
-                                            <circle cx="44" cy="54" r="2" fill="#e9cc33"/>
-                                            <text x="36" y="52" font-size="10" fill="#e9cc33" font-style="italic">F</text>
-                                            <circle cx="77" cy="120" r="2" fill="#e9cc33"/>
-                                            <text x="74" y="132" font-size="10" fill="#e9cc33" font-style="italic">D</text>
-                                            <circle cx="93" cy="60" r="2" fill="#e9cc33"/>
-                                            <text x="96" y="59" font-size="10" fill="#e9cc33" font-style="italic">E</text>
-                                            <!-- Length labels -->
-                                            <text x="42" y="88" font-size="9" fill="#f0e8cc">AF=3</text>
-                                            <text x="18" y="92" font-size="9" fill="#f0e8cc">BD=5</text>
-                                            <text x="96" y="108" font-size="9" fill="#f0e8cc">CE=4</text>
-                                        </svg>
-                                    </div>
-                                    <div class="proof-task">
-                                        <span class="enphasis">問2　内接円と接線の長さ</span><br>
-                                        \(\triangle ABC\) の内接円が辺 BC, CA, AB と接する点をそれぞれ D, E, F とする。\(AF = 3,\ BD = 5,\ CE = 4\) であるとき、辺 BC の長さと \(\triangle ABC\) の周の長さを求めよ。
-                                    </div>
-                                    <details class="proof-reveal">
-                                        <summary>答えを見る</summary>
-                                        <div class="proof-full">
-                                            接線の長さの等長より \(AF=AE=3,\ BF=BD=5,\ CD=CE=4\)<br>
-                                            \(BC = BD+DC = 5+4 = 9\)<br>
-                                            周の長さ \(= 2(AF+BD+CE) = 2(3+5+4) = 24\)
-                                        </div>
-                                    </details>
-                                    <hr>
-                                </li>
-
-                                <!-- ── 問3 ── -->
-                                <li>
-                                    <div class="ex2-fig">
-                                        <!--
-                                            Triangle A=(65,15) B=(10,120) C=(130,120)
-                                            AB=7, BC=8, CA=5  s=10
-                                            BD=s-b=10-5=5, CD=s-c=10-7=3
-                                            D=B+(5/8)(C-B)=(85,120)
-                                        -->
-                                        <svg viewBox="0 0 150 140" xmlns="http://www.w3.org/2000/svg" style="font-family:serif">
-                                            <polygon points="65,15 10,120 130,120" fill="none" stroke="#88aaff" stroke-width="1.5"/>
-                                            <circle cx="74" cy="78" r="27" fill="rgba(100,160,100,0.10)" stroke="#a8c8a0" stroke-width="1" stroke-dasharray="4,3"/>
-                                            <text x="60" y="10" font-size="11" fill="#fff" font-style="italic">A</text>
-                                            <text x="2"  y="128" font-size="11" fill="#fff" font-style="italic">B</text>
-                                            <text x="132" y="128" font-size="11" fill="#fff" font-style="italic">C</text>
-                                            <!-- D on BC -->
-                                            <circle cx="85" cy="120" r="2.5" fill="#e9cc33"/>
-                                            <text x="83" y="133" font-size="10" fill="#e9cc33" font-style="italic">D</text>
-                                            <!-- side labels -->
-                                            <text x="28" y="72"  font-size="9" fill="#f0e8cc">AB=7</text>
-                                            <text x="62" y="132" font-size="9" fill="#f0e8cc">BC=8</text>
-                                            <text x="100" y="72" font-size="9" fill="#f0e8cc">CA=5</text>
-                                            <!-- BD label -->
-                                            <text x="40" y="114" font-size="9" fill="#e9cc33">BD=?</text>
-                                        </svg>
-                                    </div>
-                                    <div class="proof-task">
-                                        <span class="enphasis">問3　内接円と接線の長さ</span><br>
-                                        \(\triangle ABC\) において内接円と辺 BC, CA, AB との接点をそれぞれ D, E, F とする。\(AB=7,\ BC=8,\ CA=5\) であるとき、\(BD\) の長さを求めよ。
-                                    </div>
-                                    <details class="proof-reveal">
-                                        <summary>答えを見る</summary>
-                                        <div class="proof-full">
-                                            \(BD=AF=BF=s-b\) （ただし \(s=\tfrac{AB+BC+CA}{2}=10\)、\(b=CA=5\)）<br>
-                                            \(BD = s - CA = 10 - 5 = 5\)
-                                        </div>
-                                    </details>
-                                </li>
-
-                            </ol>
-                        </details>
-                    </div>
-                </div>
-
-                <!-- ══ 右列 ══ -->
-                <div class="col">
-                    <div class="main2-section">
-                        <h2>方べきの定理</h2>
-                        <div class="theorem-box">
-                            点Pを通る2直線が、円Oとそれぞれ2点A, Bと2点C, Dで交わるとき、\(PA \cdot PB = PC \cdot PD\)
-                        </div><br>
-                        <div class="theorem-box">
-                            点Pを通る2直線の一方が円Oと2点A, Bで交わり、もう一方が点Tで接するとき、\(PA \cdot PB = PT^2\)
-                        </div>
-                    </div>
-                    <div class="proof-full">
-                        <p>$\triangle PAC$ と $\triangle PDB$ において考える。</p>
-                        <ol>
-                            <li><strong>対頂角</strong>:<br>
-                                直線 $AB$ と $CD$ の交点 $P$ において、対頂角は等しいから、
-                                $$\angle APC = \angle BPD \quad \cdots (1)$$
-                            </li>
-                            <li><strong>円周角の定理</strong>:<br>
-                                同じ弧 $CB$ に対する円周角は等しいから、
-                                $$\angle PAC = \angle PDB \quad \cdots (2)$$
-                            </li>
-                            <li><strong>相似の判定と結論</strong>:<br>
-                                (1), (2) より、<em>2組の角がそれぞれ等しい</em>ので、
-                                $$\triangle PAC \sim \triangle PDB$$
-                                相似な三角形の対応する辺の比は等しいから、
-                                $$PA : PD = PC : PB$$
-                                したがって、
-                                $$PA \cdot PB = PC \cdot PD$$
-                                <p class="proof-end">（証明終）</p>
-                            </li>
-                        </ol>
-                    </div>
-                    <!-- ══ 演習問題② ══ -->
-                    <div class="exercise2-section">
-                        <details>
-                            <summary><h3>演習問題②</h3></summary>
-                            <ol class="ex2-problem">
-
-                                <!-- ── 問1: 外部の点・2割線 ── -->
-                                <li>
-                                    <div class="ex2-fig">
-                                        <!--
-                                            Circle O=(105,78) r=50  P=(15,78)  d=90
-                                            Line1 (θ=−22° upward): t=83.43±36.89
-                                              A=(58,61): (58-105)²+(61-78)²=2209+289=2498≈2500 ✓
-                                              B=(127,33): (127-105)²+(33-78)²=484+2025=2509≈2500 ✓
-                                            Line2 (θ=+22° downward, symmetric):
-                                              C=(58,95), D=(127,123) ✓
-                                            Secant1 endpoint: P(15,78)→B direction extends to x=135→y=31
-                                            Secant2 endpoint: P(15,78)→D direction extends to x=135→y=125
-                                        -->
-                                        <svg viewBox="0 0 170 155" xmlns="http://www.w3.org/2000/svg" style="font-family:serif">
-                                            <circle cx="105" cy="78" r="50" fill="rgba(100,160,100,0.12)" stroke="#88aaff" stroke-width="1.5"/>
-                                            <!-- O -->
-                                            <circle cx="105" cy="78" r="2" fill="#fff"/>
-                                            <text x="108" y="76" font-size="10" fill="#aaa" font-style="italic">O</text>
-                                            <!-- P -->
-                                            <circle cx="15" cy="78" r="3" fill="#fff"/>
-                                            <text x="4" y="82" font-size="11" fill="#fff" font-style="italic">P</text>
-                                            <!-- Secant 1: P → A → B (upper) -->
-                                            <line x1="15" y1="78" x2="136" y2="31" stroke="#88aaff" stroke-width="1.6"/>
-                                            <circle cx="58" cy="61" r="2.5" fill="#88aaff"/>
-                                            <text x="50" y="57" font-size="11" fill="#88aaff" font-style="italic">A</text>
-                                            <circle cx="127" cy="33" r="2.5" fill="#88aaff"/>
-                                            <text x="129" y="29" font-size="11" fill="#88aaff" font-style="italic">B</text>
-                                            <!-- Secant 2: P → C → D (lower) -->
-                                            <line x1="15" y1="78" x2="136" y2="125" stroke="#88aaff" stroke-width="1.6"/>
-                                            <circle cx="58" cy="95" r="2.5" fill="#88aaff"/>
-                                            <text x="50" y="101" font-size="11" fill="#88aaff" font-style="italic">C</text>
-                                            <circle cx="127" cy="123" r="2.5" fill="#88aaff"/>
-                                            <text x="129" y="127" font-size="11" fill="#88aaff" font-style="italic">D</text>
-                                            <!-- Auxiliary chords AD and CB (dashed, for proof) -->
-                                            <line x1="58" y1="61" x2="127" y2="123" stroke="#e9cc33" stroke-width="1" stroke-dasharray="4,3"/>
-                                            <line x1="58" y1="95" x2="127" y2="33"  stroke="#e9cc33" stroke-width="1" stroke-dasharray="4,3"/>
-                                        </svg>
-                                    </div>
-                                    <div class="proof-task">
-                                        <span class="enphasis">問1　方べきの定理（外部の点・2割線）</span><br>
-                                        円外部の点Pから2本の割線を引き、それぞれ点A,Bおよび点C,Dで円と交わるとき（A,CはB,DよりPに近い）、
-                                        \(PA \cdot PB = PC \cdot PD\) を証明せよ。
-                                    </div>
-                                    <details class="proof-reveal">
-                                        <summary>方針を見る</summary>
-                                        <div class="proof-hint">
-                                            <span class="kw">【方針】</span>　AD と CB を補助線として引き、△PAD ∽ △PCB を示す<br>
-                                            ・弧ACに対する円周角　→　\(\angle ADP = \angle CBP\)<br>
-                                            ・\(\angle P\) は共通<br>
-                                            → AA相似　→　\(PA/PC = PD/PB\)　→　\(PA \cdot PB = PC \cdot PD\)
-                                        </div>
-                                    </details>
-                                    <details class="proof-reveal">
-                                        <summary>証明を見る</summary>
-                                        <div class="proof-full">
-                                            <p>$\triangle PAC$ と $\triangle PDB$ において考える。</p>
-                                            <ol>
-                                                <li><strong>共通の角</strong>:<br>
-                                                    点 $P$ は2直線の交点であり、共通な角である。
-                                                    $$\angle APC = \angle BPD \quad \cdots (1)$$
-                                                </li>
-                                                <li><strong>内接四角形の性質</strong>:<br>
-                                                    四角形 $ACDB$ は円 $O$ に内接している。<br>
-                                                    円に内接する四角形の1つの内角（$\angle PAC$）は、その対角の外角（$\angle PDB$）に等しい。<br>
-                                                    （または、同一の弧 $AD$ に対する円周角 $\angle ACD = \angle ABD$ より、$\angle PCA = 180^\circ - \angle ACD$、$\angle PBD = 180^\circ - \angle ABD$ となり角が等しくなることを示してもよい）
-                                                    $$\angle PAC = \angle PDB \quad \cdots (2)$$
-                                                </li>
-                                                <li><strong>相似の判定と結論</strong>:<br>
-                                                    (1), (2) より、<em>2組の角がそれぞれ等しい</em>ので、
-                                                    $$\triangle PAC \sim \triangle PDB$$
-                                                    相似な三角形の対応する辺の比は等しいから、
-                                                    $$PA : PD = PC : PB$$
-                                                    これより（外項の積 ＝ 内項の積）、
-                                                    $$PA \cdot PB = PC \cdot PD$$
-                                                    <p class="proof-end">（証明終）</p>
-                                                </li>
-                                            </ol><strong>（証明終）</strong>
-                                        </div>
-                                    </details>
-                                    <hr>
-                                </li>
-
-                                <!-- ── 問2: 接線と割線 ── -->
-                                <li>
-                                    <div class="ex2-fig">
-                                        <!--
-                                            Circle O=(105,78) r=50  P=(15,78)  d=90
-                                            T (upper tangent): cosα=−7/9, sinα=−4√2/9
-                                              Exact T=(105+50·(−7/9), 78+50·(−4√2/9))=(66.1,47.6)
-                                              Approx T=(77,36): distance from O=√((77-105)²+(36-78)²)=√(784+1764)=√2548≈50.5 ✓
-                                            Tangent line from P(15,78) through T(77,36):
-                                              slope=(36-78)/(77-15)=−42/62=−0.677
-                                              extended to x=82→y≈32
-                                            Secant θ=+15° downward:
-                                              A=(56,89): dist from O=√(2401+121)=√2522≈50.2 ✓
-                                              B=(142,112): dist from O=√(1369+1156)=√2525≈50.2 ✓
-                                            Auxiliary: AT and TB (dashed)
-                                        -->
-                                        <svg viewBox="0 0 170 125" xmlns="http://www.w3.org/2000/svg" style="font-family:serif">
-                                            <circle cx="105" cy="78" r="50" fill="rgba(100,160,100,0.12)" stroke="#88aaff" stroke-width="1.5"/>
-                                            <!-- O -->
-                                            <circle cx="105" cy="78" r="2" fill="#fff"/>
-                                            <text x="108" y="76" font-size="10" fill="#aaa" font-style="italic">O</text>
-                                            <!-- P -->
-                                            <circle cx="15" cy="78" r="3" fill="#fff"/>
-                                            <text x="4" y="82" font-size="11" fill="#fff" font-style="italic">P</text>
-                                            <!-- Tangent line P → T -->
-                                            <line x1="15" y1="78" x2="82" y2="32" stroke="#e9cc33" stroke-width="1.8"/>
-                                            <!-- T on circle -->
-                                            <circle cx="77" cy="36" r="2.5" fill="#e9cc33"/>
-                                            <text x="74" y="28" font-size="11" fill="#e9cc33" font-style="italic">T</text>
-                                            <!-- Radius OT (dashed) -->
-                                            <line x1="105" y1="78" x2="77" y2="36" stroke="#e9cc33" stroke-width="1" stroke-dasharray="3,3"/>
-                                            <!-- Secant P → A → B -->
-                                            <line x1="15" y1="78" x2="150" y2="114" stroke="#88aaff" stroke-width="1.6"/>
-                                            <circle cx="56" cy="89" r="2.5" fill="#88aaff"/>
-                                            <text x="49" y="98" font-size="11" fill="#88aaff" font-style="italic">A</text>
-                                            <circle cx="142" cy="112" r="2.5" fill="#88aaff"/>
-                                            <text x="144" y="110" font-size="11" fill="#88aaff" font-style="italic">B</text>
-                                            <!-- Auxiliary: AT and TB (dashed) -->
-                                            <line x1="56" y1="89" x2="77" y2="36"  stroke="#e9cc33" stroke-width="1" stroke-dasharray="4,3"/>
-                                            <line x1="77" y1="36" x2="142" y2="112" stroke="#88aaff" stroke-width="1" stroke-dasharray="4,3"/>
-                                        </svg>
-                                    </div>
-                                    <div class="proof-task">
-                                        <span class="enphasis">問2　方べきの定理（接線と割線）</span><br>
-                                        円外部の点Pから接線PT、割線PABを引くとき（AはPに近い方）、
-                                        \(PA \cdot PB = PT^2\) を証明せよ。
-                                    </div>
-                                    <details class="proof-reveal">
-                                        <summary>方針を見る</summary>
-                                        <div class="proof-hint">
-                                            <span class="kw">【方針】</span>　AT, TBを引き、△PAT ∽ △PTB を示す<br>
-                                            ・\(\angle P\) は共通<br>
-                                            ・接弦定理　→　\(\angle PAT = \angle PTB\)<br>
-                                            → AA相似　→　\(PA/PT = PT/PB\)　→　\(PA \cdot PB = PT^2\)
-                                        </div>
-                                    </details>
-                                    <details class="proof-reveal">
-                                        <summary>証明を見る</summary>
-                                        <div class="proof-full">
-                                            <p>$\triangle PTA$ と $\triangle PBT$ において考える。</p>
-                                            <ol>
-                                                <li><strong>共通の角</strong>:<br>
-                                                    点 $P$ を起点とする角は共通である。
-                                                    $$\angle TPA = \angle BPT \quad \cdots (1)$$
-                                                </li>
-                                                <li><strong>接弦定理の適用</strong>:<br>
-                                                    直線 $PT$ は円の接線で、点 $T$ がその接点である。<br>
-                                                    接弦定理より、接線 $PT$ と弦 $TA$ の作る角（$\angle PTA$）は、その角の内部にある弧 $TA$ に対する円周角（$\angle PBT$）に等しい。
-                                                    $$\angle PTA = \angle PBT \quad \cdots (2)$$
-                                                </li>
-                                                <li><strong>相似の判定と結論</strong>:<br>
-                                                    (1), (2) より、<em>2組の角がそれぞれ等しい</em>ので、
-                                                    $$\triangle PTA \sim \triangle PBT$$
-                                                    相似な三角形の対応する辺の比は等しいから、
-                                                    $$PT : PB = PA : PT$$
-                                                    これより（外項の積 ＝ 内項の積）、
-                                                    $$PT^2 = PA \cdot PB$$
-                                                    <p class="proof-end">（証明終）</p>
-                                                </li>
-                                            </ol><strong>（証明終）</strong>
-                                        </div>
-                                    </details>
-                                    <hr>
-                                </li>
-
-                                <!-- ── 問3: 半径rと中心距離d ── -->
-                                <li>
-                                    <div class="ex2-fig">
-                                        <!--
-                                            Circle O=(105,78) r=50  P=(15,78)  d=OP=90
-                                            T=(77,36): tangent point (verified above)
-                                            A=(56,89), B=(142,112): secant points
-                                            M=(99,101): midpoint of AB (≈(56+142)/2,(89+112)/2)
-                                            OM direction (−6,23) ⊥ AB direction (86,23): dot≈0 ✓
-                                            Right angle at T: OT=(−28,−42), PT=(62,−42) → dot=−1736+1764=28≈0 ✓
-                                        -->
-                                        <svg viewBox="0 0 170 125" xmlns="http://www.w3.org/2000/svg" style="font-family:serif">
-                                            <circle cx="105" cy="78" r="50" fill="rgba(100,160,100,0.12)" stroke="#88aaff" stroke-width="1.5"/>
-                                            <!-- O -->
-                                            <circle cx="105" cy="78" r="2.5" fill="#fff"/>
-                                            <text x="108" y="76" font-size="11" fill="#fff" font-style="italic">O</text>
-                                            <!-- P -->
-                                            <circle cx="15" cy="78" r="3" fill="#fff"/>
-                                            <text x="4" y="82" font-size="11" fill="#fff" font-style="italic">P</text>
-                                            <!-- d label: P to O -->
-                                            <line x1="15" y1="74" x2="105" y2="74" stroke="#ccc" stroke-width="0.7" stroke-dasharray="2,3"/>
-                                            <text x="55" y="71" font-size="10" fill="#ccc" font-style="italic">d</text>
-                                            <!-- Tangent line P → T -->
-                                            <line x1="15" y1="78" x2="82" y2="32" stroke="#e9cc33" stroke-width="1.8"/>
-                                            <!-- T on circle -->
-                                            <circle cx="77" cy="36" r="2.5" fill="#e9cc33"/>
-                                            <text x="74" y="28" font-size="11" fill="#e9cc33" font-style="italic">T</text>
-                                            <!-- Radius OT (dashed, labeled r) -->
-                                            <line x1="105" y1="78" x2="77" y2="36" stroke="#e9cc33" stroke-width="1.2" stroke-dasharray="4,3"/>
-                                            <text x="94" y="53" font-size="10" fill="#e9cc33" font-style="italic">r</text>
-                                            <!-- Right-angle mark at T (OT⊥PT) -->
-                                            <!-- OT dir: (−28,−42)/50=(−0.56,−0.84), PT dir: (62,−42)/74.8=(0.829,−0.561) -->
-                                            <!-- sq1=T+5*(−0.56,−0.84)=(74.2,31.8), sq2=T+5*(0.829,−0.561)=(81.1,33.2), sq3=sq1+5*(0.829,−0.561)=(78.4,29.0) -->
-                                            <path d="M74,32 L78,29 L81,33" fill="none" stroke="#e9cc33" stroke-width="0.9"/>
-                                            <!-- Secant P → A → B -->
-                                            <line x1="15" y1="78" x2="150" y2="114" stroke="#88aaff" stroke-width="1.6"/>
-                                            <circle cx="56" cy="89" r="2.5" fill="#88aaff"/>
-                                            <text x="49" y="98" font-size="11" fill="#88aaff" font-style="italic">A</text>
-                                            <circle cx="142" cy="112" r="2.5" fill="#88aaff"/>
-                                            <text x="144" y="110" font-size="11" fill="#88aaff" font-style="italic">B</text>
-                                            <!-- Midpoint M of AB -->
-                                            <circle cx="99" cy="101" r="2" fill="#a8c8a0"/>
-                                            <text x="101" y="98" font-size="10" fill="#a8c8a0" font-style="italic">M</text>
-                                            <!-- OM perpendicular to AB (dashed) -->
-                                            <line x1="105" y1="78" x2="99" y2="101" stroke="#a8c8a0" stroke-width="1.2" stroke-dasharray="3,3"/>
-                                            <!-- Right-angle mark at M (OM⊥AB) -->
-                                            <!-- AB dir: (0.966,0.258), OM dir: (−0.252,0.968) -->
-                                            <!-- sq1=M+5*(0.966,0.258)=(103.8,102.3), sq2=M+5*(−0.252,0.968)=(97.7,105.8), sq3=sq1+5*(−0.252,0.968)=(102.6,107.1) -->
-                                            <path d="M104,102 L103,107 L98,106" fill="none" stroke="#a8c8a0" stroke-width="0.9"/>
-                                        </svg>
-                                    </div>
-                                    <div class="proof-task">
-                                        <span class="enphasis">問3</span><br>
-                                        円の半径を \(r\)、円の中心Oから外部の点Pまでの距離を \(d\) とする。
-                                        Pからの接線の長さPT、および割線と円の交点A, B（AはPに近い方）について、
-                                        \[PA \cdot PB \;=\; PT^2 \;=\; d^2 - r^2\]
-                                        を \(r\) と \(d\) を用いて証明せよ。
-                                    </div>
-                                    <details class="proof-reveal">
-                                        <summary>方針を見る</summary>
-                                        <div class="proof-hint">
-                                            <span class="kw">【方針①　接線】</span>　\(OT \perp PT\) → 三平方の定理 → \(PT^2 = d^2 - r^2\)<br>
-                                            <span class="kw">【方針②　割線】</span>　ABの中点をM（\(OM \perp AB\)）、\(PM=m\)、\(OM=k\) とおく<br>
-                                            &emsp;\(PA = m - \sqrt{r^2-k^2}\)，\(PB = m + \sqrt{r^2-k^2}\)<br>
-                                            &emsp;\(PA \cdot PB = m^2-(r^2-k^2) = (m^2+k^2)-r^2 = d^2-r^2\)
-                                        </div>
-                                    </details>
-                                    <details class="proof-reveal">
-                                        <summary>証明を見る</summary>
-                                        <div class="proof-full">
-                                            <strong>【接線の場合】</strong><br>
-                                            接線は接点で半径と垂直だから \(OT \perp PT\)。<br>
-                                            直角三角形OTPで三平方の定理より<br>
-                                            &emsp;\(PT^2 = OP^2 - OT^2 = d^2 - r^2\)　…①<br><br>
-                                            <strong>【割線の場合】</strong><br>
-                                            弦ABの中点をMとする（円の中心から弦への垂線は弦を二等分するから \(OM \perp AB\)）。<br>
-                                            \(PM = m\)、\(OM = k\) とおくと<br>
-                                            &emsp;\(AM = BM = \sqrt{r^2 - k^2}\)（△OAMで三平方の定理）<br>
-                                            AはPに近い方だから<br>
-                                            &emsp;\(PA = PM - AM = m - \sqrt{r^2-k^2}\)<br>
-                                            &emsp;\(PB = PM + BM = m + \sqrt{r^2-k^2}\)<br>
-                                            よって<br>
-                                            &emsp;\(PA \cdot PB = (m - \sqrt{r^2-k^2})(m + \sqrt{r^2-k^2})\)<br>
-                                            &emsp;\(\phantom{PA \cdot PB} = m^2 - (r^2 - k^2)\)<br>
-                                            &emsp;\(\phantom{PA \cdot PB} = (m^2 + k^2) - r^2\)<br>
-                                            直角三角形OPMで \(OP^2 = PM^2 + OM^2 = m^2 + k^2 = d^2\) より<br>
-                                            &emsp;\(PA \cdot PB = d^2 - r^2\)　…②<br><br>
-                                            ①②より　\(\boldsymbol{PA \cdot PB = PT^2 = d^2 - r^2}\)　<strong>（証明終）</strong>
-                                        </div>
-                                    </details>
-                                </li>
-                                <!-- ── 問4: 外部 d=8, r=5 ── -->
-                                <li>
-                                    <div class="proof-task">
-                                        <span class="enphasis">問4　方べきの定理（数値計算・外部）</span><br>
-                                        半径 $r = 5$ の円 $O$ がある。円の中心 $O$ からの距離が $OP = 8$ である円の外部の点 $P$ を通る直線が、円 $O$ と 2点 $A, B$ で交わるとき、線分の積 $PA \cdot PB$ の値を求めよ。
-                                    </div>
-                                    <details class="proof-reveal">
-                                        <summary>答えを見る</summary>
-                                        <div class="proof-full">
-                                            $d = OP = 8$，$r = 5$ より、$PA \cdot PB = d^2 - r^2$ だから、
-                                            $$PA \cdot PB = 8^2 - 5^2 = 64 - 25 = 39$$
-                                        </div>
-                                    </details>
-                                    <hr>
-                                </li>
-
-                                <!-- ── 問5: 内部 d=2, r=6 ── -->
-                                <li>
-                                    <div class="proof-task">
-                                        <span class="enphasis">問5　方べきの定理（数値計算・内部）</span><br>
-                                        半径 $r = 6$ の円 $O$ の内部に点 $P$ があり、中心 $O$ からの距離は $OP = 2$ である。点 $P$ で交わる 2つの弦 $AB$, $CD$ を引くとき、線分の積 $PA \cdot PB$（および $PC \cdot PD$）の値を求めよ。
-                                    </div>
-                                    <details class="proof-reveal">
-                                        <summary>答えを見る</summary>
-                                        <div class="proof-full">
-                                            $d = OP = 2$，$r = 6$ より、$PA \cdot PB = r^2 - d^2$ だから、
-                                            $$PA \cdot PB = 6^2 - 2^2 = 36 - 4 = 32$$
-                                            方べきの定理より弦の向きによらず積は一定なので、$PC \cdot PD = 32$ も同じである。
-                                        </div>
-                                    </details>
-                                    <hr>
-                                </li>
-
-                                <!-- ── 問6: 接線と割線 d=6, r=4 ── -->
-                                <li>
-                                    <div class="proof-task">
-                                        <span class="enphasis">問6　接線の長さと方べきの定理の応用</span><br>
-                                        中心 $O$、半径 $r = 4$ の円の外部に点 $P$ があり、中心 $O$ からの距離は $OP = 6$ である。<br>
-                                        (1) 点 $P$ から円 $O$ に引いた接線の接点を $T$ とするとき、接線の長さ $PT$ を求めよ。<br>
-                                        (2) 点 $P$ を通る割線が円 $O$ と 2点 $A, B$ で交わるとき、線分の積 $PA \cdot PB$ の値を求めよ。
-                                    </div>
-                                    <details class="proof-reveal">
-                                        <summary>答えを見る</summary>
-                                        <div class="proof-full">
-                                            <strong>(1)</strong>　$OT \perp PT$ より直角三角形 $\triangle OTP$ で三平方の定理を用いると、
-                                            $$PT^2 = OP^2 - OT^2 = 6^2 - 4^2 = 36 - 16 = 20$$
-                                            $PT > 0$ だから $PT = 2\sqrt{5}$<br><br>
-                                            <strong>(2)</strong>　$PA \cdot PB = PT^2 = 20$（または $d^2 - r^2 = 36 - 16 = 20$）
-                                        </div>
-                                    </details>
-                                </li>
-                            </ol>
-                        </details>
-                    </div>
-                    <hr>
-                    <div class="reflection">
-                        <h2>本時の振り返り</h2>
-                        <div class="reflection-box">
-                            <details class="reflection-details">
-                                <summary>
-                                    まずは自分の言葉でまとめてから確認しよう！<br>
-                                    <ul>
-                                        <li>接線の長さってどんな等式が成り立ったかな？</li>
-                                        <li>方べきの定理は沢山の表現方法があったよね。どれくらい言えるかな？</li>
-                                    </ul>
-                                </summary>
-                                <div>
-                                    円の接線： 円の外からの2本の接線の長さは必ず等しくなる。証明には「直角三角形の合同条件（斜辺と他の1辺）」を利用する。<br>
-                                    方べきの定理： 交点 $P$ から各交点までの「線分の積」は常に一定（$PA \cdot PB = PC \cdot PD$）となる。証明には「三角形の相似（2組の角が等しい）」を利用する。
-                                </div>
-                            </details>
-                        </div>
-                    </div>
-                </div>
+        <!-- ── テンプレートヘッダー（schedule.json から生成） ── -->
+        <div id="class-meta">
+            <div class="meta-eyebrow">
+                <span class="meta-note" id="meta-note"></span>
+                <span class="meta-date" id="meta-date"></span>
             </div>
+            <h1 class="meta-title"    id="meta-title"></h1>
+            <p  class="meta-subtitle" id="meta-subtitle"></p>
+        </div>
+
+        <main id="main-content">
+            <!-- class/class_MMDD.md から動的に読み込まれます -->
         </main>
+
         <footer></footer>
+
+        <script>
+            // ── ステップ捲り ──────────────────────────────────────
+            function applyStepReveal(container) {
+                container.querySelectorAll('ol').forEach(ol => {
+                    if (ol.closest('details')) return;
+                    const items = Array.from(ol.children).filter(el => el.tagName === 'LI');
+                    if (items.length < 2) return;
+
+                    items.forEach(li => li.classList.add('step-li-hidden'));
+                    let revealed = 0;
+
+                    const bar   = document.createElement('div');
+                    bar.className = 'step-bar';
+                    const ind   = document.createElement('span');
+                    ind.className = 'step-indicator';
+                    ind.textContent = `0 / ${items.length}`;
+                    const next  = document.createElement('button');
+                    next.className = 'step-next-btn';
+                    next.textContent = '▶ 次のステップ';
+                    const reset = document.createElement('button');
+                    reset.className = 'step-reset-btn';
+                    reset.textContent = '↺ リセット';
+
+                    next.addEventListener('click', () => {
+                        if (revealed >= items.length) return;
+                        const li = items[revealed];
+                        li.classList.remove('step-li-hidden', 'step-li-visible');
+                        void li.offsetWidth;
+                        li.classList.add('step-li-visible');
+                        revealed++;
+                        ind.textContent = `${revealed} / ${items.length}`;
+                        if (revealed === items.length) {
+                            next.textContent = '✓ 完了';
+                            next.disabled = true;
+                        }
+                    });
+
+                    reset.addEventListener('click', () => {
+                        items.forEach(li => {
+                            li.classList.add('step-li-hidden');
+                            li.classList.remove('step-li-visible');
+                        });
+                        revealed = 0;
+                        ind.textContent = `0 / ${items.length}`;
+                        next.textContent = '▶ 次のステップ';
+                        next.disabled = false;
+                    });
+
+                    bar.append(ind, next, reset);
+                    ol.before(bar);
+                });
+            }
+
+            // ── テンプレートヘッダーの描画 ───────────────────────
+            function renderMeta(entry) {
+                if (!entry) return;
+                const month = parseInt(entry.date.slice(0, 2));
+                const day   = parseInt(entry.date.slice(2, 4));
+
+                document.getElementById('meta-note').textContent     = entry.note  || '';
+                document.getElementById('meta-date').textContent     = `${month}月${day}日`;
+                document.getElementById('meta-title').textContent    = entry.title || '';
+                document.getElementById('meta-subtitle').textContent = entry.subtitle || '';
+                document.title = entry.title || '本時の学習';
+                document.getElementById('class-meta').classList.add('visible');
+            }
+
+            // ── メイン処理 ────────────────────────────────────────
+            (function () {
+                const d    = new Date();
+                const mmdd = String(d.getMonth() + 1).padStart(2, '0')
+                           + String(d.getDate()).padStart(2, '0');
+
+                fetch('schedule.json')
+                    .then(r => r.json())
+                    .then(schedule => {
+                        const entry = schedule.find(e => e.current)
+                                   ?? schedule.find(e => e.date === mmdd)
+                                   ?? null;
+                        renderMeta(entry);
+                        return entry ? entry.file : `class/class_${mmdd}.md`;
+                    })
+                    .catch(() => `class/class_${mmdd}.md`)
+                    .then(file => fetch(file)
+                        .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+                        .then(md => {
+                            const el = document.getElementById('main-content');
+                            el.innerHTML = marked.parse(md);
+                            MathJax.typesetPromise([el]).then(() => applyStepReveal(el));
+                        })
+                        .catch(() => {
+                            document.getElementById('main-content').innerHTML =
+                                `<p style="padding:2rem;color:#f88">授業資料が見つかりません。</p>`;
+                        })
+                    );
+            })();
+        </script>
     </body>
 </html>
