@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>パスカルの定理：応用演習クイズ</title>
+<style>
+  body { font-family: "Hiragino Sans", "Yu Gothic", sans-serif; max-width: 680px; margin: 20px auto; padding: 0 16px; background: #fafafa; color: #222; }
+  h1 { font-size: 20px; }
+  .topbar { display:flex; justify-content:space-between; align-items:center; font-size: 13px; color: #666; margin-bottom: 8px; }
+  .card { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 18px; }
+  .problem-tag { display:inline-block; font-size: 12px; font-weight: bold; color: #534AB7; background:#EEEAFB; border-radius:6px; padding:3px 10px; margin-bottom: 8px; }
+  .figure { display:flex; justify-content:center; margin-bottom: 4px; }
+  .figure svg { width: 100%; max-width: 300px; height: auto; display: block; }
+  .legend { font-size: 12px; color: #666; text-align: center; margin: 0 0 14px; }
+  .qtext { font-size: 15px; line-height: 2; margin: 0 0 14px; white-space: pre-wrap; }
+  .answers { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom: 10px; }
+  input[type=text] { font-size: 14px; padding: 6px 8px; border: 1px solid #bbb; border-radius: 6px; text-align: center; }
+  .mc-options { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+  .mc-option { display: flex; align-items: flex-start; gap: 8px; font-size: 14px; line-height: 1.6; padding: 8px 10px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
+  .mc-option:hover { background: #f5f5f9; }
+  .mc-option input { margin-top: 3px; }
+  .mc-option.correct { border-color: #0F6E56; background: #EAF7F2; }
+  .mc-option.wrong { border-color: #A32D2D; background: #FBEDED; }
+  .feedback { font-size: 14px; line-height: 1.7; margin-bottom: 10px; }
+  .ok { color: #0F6E56; }
+  .bad { color: #A32D2D; }
+  button { font-size: 14px; padding: 8px 16px; border: 1px solid #bbb; border-radius: 6px; background: #fff; cursor: pointer; margin-right: 8px; margin-top: 4px; }
+  button:hover { background: #f0f0f0; }
+  .score { font-weight: bold; }
+</style>
+</head>
+<body>
+<h1>パスカルの定理：応用演習クイズ</h1>
+<div class="topbar">
+  <span id="progress">問題 1 / 7</span>
+  <span class="score" id="score">スコア 0 / 7</span>
+</div>
+<div class="card">
+  <div class="problem-tag" id="ptag"></div>
+  <div class="figure" id="figure"></div>
+  <div class="legend" id="legend"></div>
+  <p class="qtext" id="qtext"></p>
+  <div class="answers" id="answerArea"></div>
+  <div class="feedback" id="feedback"></div>
+  <div>
+    <button id="checkBtn">確認</button>
+    <button id="nextBtn" style="display:none;">次の問題 →</button>
+    <button id="retryBtn" style="display:none;">最初からやり直す</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 図形描画モジュール (point-based geometry renderer)
+// ============================================================
+function geomFig(W, H, points, opts){
+  opts = opts || {};
+  const segments = opts.segments || [];
+  const circles = opts.circles || [];
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">`;
+
+  circles.forEach(c => {
+    svg += `<circle cx="${c.cx}" cy="${c.cy}" r="${c.r}" fill="none" stroke="${c.color || '#999'}" stroke-width="1.5"/>`;
+  });
+
+  segments.forEach(s => {
+    const a = points[s.from], b = points[s.to];
+    const dash = s.dash ? ` stroke-dasharray="${s.dash}"` : '';
+    svg += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${s.color || '#534AB7'}" stroke-width="2.5"${dash}/>`;
+  });
+
+  Object.keys(points).forEach(name => {
+    const p = points[name];
+    if (p.hidden) return;
+    const r = p.r != null ? p.r : 4;
+    const color = p.color || '#222';
+    const lx = p.x + (p.lx != null ? p.lx : 0);
+    const ly = p.y + (p.ly != null ? p.ly : -10);
+    const anchor = p.anchor || 'middle';
+    svg += `<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${color}"/>`;
+    svg += `<text x="${lx}" y="${ly}" text-anchor="${anchor}" font-size="18" fill="${color}">${name}</text>`;
+  });
+
+  Object.keys(points).forEach(name => {
+    const p = points[name];
+    if (!p.hidden || !p.label) return;
+    svg += `<text x="${p.lx}" y="${p.ly}" text-anchor="${p.anchor||'middle'}" font-size="12" fill="${p.color||'#666'}">${p.label}</text>`;
+  });
+
+  svg += `</svg>`;
+  return svg;
+}
+
+// --- 図1：星型に結んだ六角形（A→C→E→B→D→F→A） ---
+const fig1 = geomFig(320, 320, {
+  A: { x: 160, y: 60,  ly: -10 },
+  B: { x: 246.6, y: 110, lx: 16, ly: 0 },
+  C: { x: 246.6, y: 210, lx: 16, ly: 4 },
+  D: { x: 160, y: 260, ly: 18 },
+  E: { x: 73.4, y: 210, lx: -16, ly: 4 },
+  F: { x: 73.4, y: 110, lx: -16, ly: 0 }
+}, {
+  circles: [{ cx: 160, cy: 160, r: 100 }],
+  segments: [
+    { from:'A', to:'C', color:'#D85A30' },
+    { from:'B', to:'D', color:'#D85A30' },
+    { from:'C', to:'E', color:'#5b9dd9' },
+    { from:'D', to:'F', color:'#5b9dd9' },
+    { from:'E', to:'B', color:'#3FA88A' },
+    { from:'F', to:'A', color:'#3FA88A' }
+  ]
+});
+
+// --- 図2：五角形ABCDE + 点Aにおける接線 ---
+const fig2 = geomFig(320, 320, {
+  A:  { x: 160, y: 60,  ly: -10 },
+  B:  { x: 246.6, y: 110, lx: 16, ly: 0 },
+  C:  { x: 246.6, y: 210, lx: 16, ly: 4 },
+  D:  { x: 160, y: 260, ly: 18 },
+  E:  { x: 73.4, y: 210, lx: -16, ly: 4 },
+  TA1:{ x: 30, y: 60, hidden:true },
+  TA2:{ x: 290, y: 60, hidden:true, label:'Aの接線', lx: 250, ly: 48, color:'#3FA88A' }
+}, {
+  circles: [{ cx: 160, cy: 160, r: 100 }],
+  segments: [
+    { from:'A', to:'B', color:'#D85A30' },
+    { from:'D', to:'E', color:'#D85A30' },
+    { from:'B', to:'C', color:'#5b9dd9' },
+    { from:'E', to:'A', color:'#5b9dd9' },
+    { from:'C', to:'D', color:'#3FA88A' },
+    { from:'TA1', to:'TA2', color:'#3FA88A', dash:'5 4' }
+  ]
+});
+
+// ---- 解答チェック用ヘルパー ----
+function norm(s){ return (s||'').replace(/\s+/g,'').toUpperCase(); }
+function segNorm(s){
+  const t = norm(s);
+  if (t.length !== 2) return t;
+  return [t[0], t[1]].sort().join('');
+}
+function pairEq(v, expected){
+  // expected: ['AB','CD'] のように2文字の組（順序・大文字小文字・前後逆を無視）
+  return expected.some(e => segNorm(v) === segNorm(e));
+}
+function textIncludes(v, keywords){
+  const t = (v||'').trim();
+  return keywords.some(k => t.includes(k));
+}
+function isOne(v){
+  const t = (v||'').trim();
+  return t === '1' || t === '１';
+}
+function isZero(v){
+  const t = (v||'').trim();
+  return t === '0' || t === '０';
+}
+
+const questions = [
+  // ---- 問題1：頂点を結ぶ順番を変える（星型の六角形） ----
+  {
+    tag: "問題1：ABCDEFが順番に並んでいない例（星型の六角形）",
+    fig: fig1,
+    legend: "円周上のA〜Fの位置は変えず、A→C→E→B→D→F→Aの順に結んで六角形をつくる（色は対辺ペアごと）",
+    text: "円周上の6点A〜Fの位置はそのままに、今度は A → C → E → B → D → F → A の順に結んで六角形をつくる（星型・図参照）。\n「1つ開けて対辺ペアを作る」というルールを、この新しい結ぶ順 (A,C,E,B,D,F) に当てはめて、3組の対辺ペアを答えなさい。\n\n辺ACの対辺 = 辺{{a}}\n辺CEの対辺 = 辺{{b}}\n辺EBの対辺 = 辺{{c}}",
+    blanks: [ {key:'a',width:50}, {key:'b',width:50}, {key:'c',width:50} ],
+    check: v => pairEq(v.a, ['BD']) && pairEq(v.b, ['DF']) && pairEq(v.c, ['FA']),
+    template: () => "AC↔BD, CE↔DF, EB↔FA",
+    explain: "結ぶ順 (A,C,E,B,D,F) でも、1つ開けて取るというルールは同じです。辺ACの次のCEを1つ開けるとBD、辺CEの次のEBを1つ開けるとDF、辺EBの次のBDを1つ開けるとFA、というように対辺ペアが決まります。"
+  },
+  {
+    tag: "問題1：ABCDEFが順番に並んでいない例（星型の六角形）",
+    fig: fig1,
+    type: "mc",
+    legend: "円周上のA〜Fの位置は変えず、A→C→E→B→D→F→Aの順に結んで六角形をつくる（色は対辺ペアごと）",
+    text: "この星型の六角形でも、3組の対辺の延長線の交点 P', Q', R' は一直線上に並ぶ。対辺ペアを AC↔BD, CE↔DF, EB↔FA に置き換えれば、証明の進め方そのものはもとの六角形のときと同じである。次のうち、その証明の正しい手順の順番を選びなさい。",
+    options: [
+      "① 対辺ペア(AC,BD),(CE,DF),(EB,FA)から補助三角形△X'Y'Z'を作る\n② △X'Y'Z'を横切る3本の直線にメネラウスの定理を3回適用する\n③ 得られた3つの式の積をとり、頂点X',Y',Z'ごとにカタマリへ整理する\n④ 各頂点で方べきの定理を使い、3つのカタマリをそれぞれ1にする\n⑤ 積が1×1×1=1となるので、メネラウスの定理の逆よりP',Q',R'は一直線上にあると結論する",
+      "① △X'Y'Z'を横切る3本の直線にメネラウスの定理を3回適用する\n② 対辺ペアから補助三角形△X'Y'Z'を作る\n③ 各頂点で方べきの定理を使い、3つのカタマリをそれぞれ1にする\n④ 得られた3つの式の積をとり、頂点ごとにカタマリへ整理する\n⑤ メネラウスの定理の逆よりP',Q',R'は一直線上にあると結論する",
+      "① 対辺ペアから補助三角形△X'Y'Z'を作る\n② 各頂点で方べきの定理を使い、3つのカタマリをそれぞれ1にする\n③ △X'Y'Z'を横切る3本の直線にメネラウスの定理を3回適用する\n④ 得られた3つの式の積をとり、頂点ごとにカタマリへ整理する\n⑤ メネラウスの定理の逆よりP',Q',R'は一直線上にあると結論する",
+      "① 得られた式の積をとり、頂点ごとにカタマリへ整理する\n② 対辺ペアから補助三角形△X'Y'Z'を作る\n③ △X'Y'Z'を横切る3本の直線にメネラウスの定理を3回適用する\n④ 各頂点で方べきの定理を使い、3つのカタマリをそれぞれ1にする\n⑤ メネラウスの定理の逆よりP',Q',R'は一直線上にあると結論する"
+    ],
+    correctIndex: 0,
+    template: () => "①補助三角形を作る → ②メネラウスの定理×3 → ③頂点ごとに整理 → ④方べきの定理で各カタマリ=1 → ⑤メネラウスの逆で結論",
+    explain: "対辺ペアの記号が変わっても、証明の手順自体は「補助三角形を作る → メネラウスの定理を3回使う → 頂点ごとに整理する → 方べきの定理で各カタマリを1にする → メネラウスの逆で結論する」という同じ順番です。"
+  },
+
+  // ---- 問題2：五角形への退化（F→A） ----
+  {
+    tag: "問題2：五角形の場合（F→Aの極限）と対辺の取り方",
+    fig: fig2,
+    legend: "六角形ABCDEFで点Fを点Aに近づけると、五角形ABCDE＋点Aにおける接線になる",
+    text: "六角形ABCDEFにおいて、点Fを点Aに限りなく近づける（F→A）。このとき、\n\n直線EF は、E と A を通る円の弦 {{a}} に近づく。\n直線FA は、F と A がほとんど同じ点になるため、点Aにおける円の {{b}} に近づく。",
+    blanks: [ {key:'a',width:60}, {key:'b',width:60} ],
+    check: v => pairEq(v.a, ['EA']) && textIncludes(v.b, ['接線']),
+    template: () => "EA（弦）, 接線",
+    explain: "Fを限りなくAに近づけると、EとFを通る直線はEとAを通る弦EAに近づき、FとAを通る直線（2点がほぼ重なる）は点Aにおける接線に近づきます。"
+  },
+  {
+    tag: "問題2：五角形の場合（F→Aの極限）と対辺の取り方",
+    fig: fig2,
+    legend: "六角形ABCDEFで点Fを点Aに近づけると、五角形ABCDE＋点Aにおける接線になる",
+    text: "もとの六角形では対辺ペアは AB↔DE、BC↔EF、CD↔FA であった。F→Aとした後、これらを五角形ABCDEの言葉で書き直すと、次のようになる。\n\n辺ABの対辺　= 辺{{a}}\n辺BCの対辺　= {{b}}（弦）\n辺CDの対辺　= 点{{c}}における接線",
+    blanks: [ {key:'a',width:50}, {key:'b',width:50}, {key:'c',width:50} ],
+    check: v => pairEq(v.a, ['DE']) && pairEq(v.b, ['EA']) && norm(v.c) === 'A',
+    template: () => "AB↔DE, BC↔EA, CD↔(Aの接線)",
+    explain: "AB↔DEはそのまま残り、BC↔EFはBC↔EA（弦EA）に、CD↔FAはCD↔（点Aにおける接線）に置き換わります。"
+  },
+  {
+    tag: "問題2：五角形の場合 — 準備：補助三角形XYZ",
+    fig: fig2,
+    legend: "六角形ABCDEFで点Fを点Aに近づけると、五角形ABCDE＋点Aにおける接線になる",
+    text: "六角形の証明でつくった補助三角形 △XYZ（X=AB∩CD, Y=CD∩EF, Z=EF∩AB）も、F→Aで形が変わる。\n\nX = AB∩CD はそのまま変わらない。\nY = CD∩EF は Y = CD∩{{a}} となる。\nZ = EF∩AB は、EFもABも点Aを通る直線に近づくため、Z は五角形の頂点 {{b}} 自身と一致する。\n\nつまり、補助三角形の1つの頂点が、もとの図形の頂点と重なってしまう。",
+    blanks: [ {key:'a',width:50}, {key:'b',width:50} ],
+    check: v => pairEq(v.a, ['EA']) && norm(v.b) === 'A',
+    template: () => "Y=CD∩EA, Z=A",
+    explain: "Y=CD∩EFはEF→EAなのでY=CD∩EAになります。Z=EF∩ABはEF,ABの両方がAを通る直線に近づくため、Z=Aとなり、補助三角形の頂点Zが五角形の頂点Aと一致します。"
+  },
+  {
+    tag: "問題2：五角形の場合 — Step1：メネラウスの定理①",
+    fig: fig2,
+    legend: "六角形ABCDEFで点Fを点Aに近づけると、五角形ABCDE＋点Aにおける接線になる",
+    text: "六角形のときの式①は △XYZ に直線BCQを適用した (XB/BZ)・(ZQ/QY)・(YC/CX) = 1 であった。Z=A を代入すると、五角形の場合のメネラウスの定理は\n\n(XB/B{{a}})・({{a}}Q/QY)・(YC/CX) = {{b}}\n\nとなる。B, Q, C は六角形のときと同じ点（Q=BC∩EA）であり、式の形自体は変わらない。",
+    blanks: [ {key:'a',width:40}, {key:'b',width:40} ],
+    check: v => norm(v.a) === 'A' && isOne(v.b),
+    template: () => "a=A, b=1",
+    explain: "Z=Aなので、BZ→BA、ZQ→AQとなるだけで、メネラウスの定理の式そのものは六角形のときと全く同じ形（=1）のまま成り立ちます。"
+  },
+  {
+    tag: "問題2：五角形の場合 — Step1：メネラウスの定理②",
+    fig: fig2,
+    legend: "六角形ABCDEFで点Fを点Aに近づけると、五角形ABCDE＋点Aにおける接線になる",
+    text: "同様に、六角形のときの式②（直線DEPを適用）(XP/PZ)・(ZE/EY)・(YD/DX) = 1 も、Z=A を代入して\n\n(XP/P{{a}})・({{a}}E/EY)・(YD/DX) = {{b}}\n\nとなる。P=AB∩DE, D, E は六角形のときと同じ点である。",
+    blanks: [ {key:'a',width:40}, {key:'b',width:40} ],
+    check: v => norm(v.a) === 'A' && isOne(v.b),
+    template: () => "a=A, b=1",
+    explain: "ここでもZ=Aとするだけで、PZ→PA、ZE→AEとなり、式の形・値（=1）はそのまま成り立ちます。"
+  },
+  {
+    tag: "問題2：五角形の場合 — Step3：方べき→接弦定理",
+    fig: fig2,
+    legend: "六角形ABCDEFで点Fを点Aに近づけると、五角形ABCDE＋点Aにおける接線になる",
+    text: "六角形のときのStep3では、頂点X, Y, Zから円に2本の割線が引けることを使い、方べきの定理で3つのカタマリをそれぞれ1にしていた。\n\nところが Z=A は円{{a}}にある点なので、Aを通る2本の割線についての方べきの値は{{b}}になり、そのままでは「カタマリ＝1」を示せない。\n\nそこで、頂点Aのまわりだけは、割線の代わりにAにおける{{c}}（接線と弦のつくる角＝弦に対する円周角）を使うことで、①②で残った比をうまく処理し、最終的にすべてのカタマリの積が1になることを示す。",
+    blanks: [ {key:'a',width:50}, {key:'b',width:50}, {key:'c',width:80} ],
+    check: v => textIncludes(v.a, ['上','円周上']) && isZero(v.b) && textIncludes(v.c, ['接弦定理']),
+    template: () => "a=円周上, b=0, c=接弦定理",
+    explain: "Z=Aは円周上の点なので、方べきの値（円の中心からの距離の2乗－半径の2乗に相当する量）は0になります。割線×割線の代わりに、接線と弦のなす角を弦に対する円周角に等しいとする「接弦定理」を使うのが、五角形の場合の証明の最大のポイントです。"
+  },
+  {
+    tag: "問題2：五角形の場合 — 結論",
+    fig: fig2,
+    legend: "六角形ABCDEFで点Fを点Aに近づけると、五角形ABCDE＋点Aにおける接線になる",
+    text: "以上の議論（メネラウスの定理＋接弦定理を用いた処理）をまとめると、円に内接する五角形ABCDEに対して、\n\nP = AB ∩ DE\nQ = BC ∩ EA\nR = CD ∩ （点Aにおける接線）\n\nの3点 P, Q, R は {{a}} にある。これはパスカルの定理が、六角形の1組の頂点を重ねた{{b}}として成り立つことを示している。",
+    blanks: [ {key:'a',width:80}, {key:'b',width:80} ],
+    check: v => textIncludes(v.a, ['一直線上','一直線']) && textIncludes(v.b, ['極限','特別な場合','退化']),
+    template: () => "a=一直線上, b=極限（退化した場合）",
+    explain: "六角形でP,Q,Rが一直線上にあったのと同じく、五角形に退化した場合もP,Q,Rは一直線上（パスカル線上）にあります。これはパスカルの定理を六角形の頂点を重ねる極限として捉えた特別な場合です。"
+  }
+];
+
+let qi = 0, score = 0, answered = false;
+
+const ptag = document.getElementById('ptag');
+const qtext = document.getElementById('qtext');
+const figure = document.getElementById('figure');
+const legend = document.getElementById('legend');
+const answerArea = document.getElementById('answerArea');
+const feedback = document.getElementById('feedback');
+const progress = document.getElementById('progress');
+const scoreEl = document.getElementById('score');
+const checkBtn = document.getElementById('checkBtn');
+const nextBtn = document.getElementById('nextBtn');
+const retryBtn = document.getElementById('retryBtn');
+
+function render(){
+  const q = questions[qi];
+  answered = false;
+  progress.textContent = `問題 ${qi+1} / ${questions.length}`;
+  scoreEl.textContent = `スコア ${score} / ${questions.length}`;
+  ptag.textContent = q.tag;
+  figure.innerHTML = q.fig;
+  legend.textContent = q.legend;
+
+  qtext.innerHTML = '';
+  answerArea.innerHTML = '';
+
+  if (q.type === 'mc') {
+    qtext.textContent = q.text;
+    const wrap = document.createElement('div');
+    wrap.className = 'mc-options';
+    q.options.forEach((opt, idx) => {
+      const label = document.createElement('label');
+      label.className = 'mc-option';
+      label.id = 'mcopt_' + idx;
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'mcAnswer';
+      radio.value = idx;
+      const span = document.createElement('span');
+      span.style.whiteSpace = 'pre-wrap';
+      span.textContent = opt;
+      label.appendChild(radio);
+      label.appendChild(span);
+      wrap.appendChild(label);
+    });
+    answerArea.appendChild(wrap);
+  } else {
+    const parts = q.text.split(/(\{\{\w+\}\})/g);
+    parts.forEach(part => {
+      const m = part.match(/^\{\{(\w+)\}\}$/);
+      if (m) {
+        const b = q.blanks.find(bb => bb.key === m[1]);
+        const inp = document.createElement('input');
+        inp.type = 'text';
+        inp.style.width = (b.width || 50) + 'px';
+        inp.id = 'blank_' + m[1];
+        qtext.appendChild(inp);
+      } else if (part.length) {
+        qtext.appendChild(document.createTextNode(part));
+      }
+    });
+  }
+
+  feedback.innerHTML = '';
+  feedback.className = 'feedback';
+  checkBtn.style.display = '';
+  nextBtn.style.display = 'none';
+  retryBtn.style.display = 'none';
+  checkBtn.disabled = false;
+}
+
+function check(){
+  if (answered) return;
+  const q = questions[qi];
+  let ok, vals;
+
+  if (q.type === 'mc') {
+    const checked = answerArea.querySelector('input[name=mcAnswer]:checked');
+    if (!checked) return; // 未選択なら何もしない
+    const chosen = parseInt(checked.value, 10);
+    ok = chosen === q.correctIndex;
+    document.getElementById('mcopt_' + q.correctIndex).classList.add('correct');
+    if (!ok) document.getElementById('mcopt_' + chosen).classList.add('wrong');
+    answerArea.querySelectorAll('input[name=mcAnswer]').forEach(r => r.disabled = true);
+    vals = {};
+  } else {
+    vals = {};
+    q.blanks.forEach(b => {
+      const inp = document.getElementById('blank_' + b.key);
+      vals[b.key] = inp.value;
+    });
+    ok = q.check(vals);
+    q.blanks.forEach(b => {
+      const inp = document.getElementById('blank_' + b.key);
+      inp.style.borderColor = ok ? '#0F6E56' : '#A32D2D';
+    });
+  }
+  answered = true;
+  checkBtn.disabled = true;
+  if (ok) {
+    score++;
+    scoreEl.textContent = `スコア ${score} / ${questions.length}`;
+    feedback.className = 'feedback ok';
+    feedback.textContent = `正解！　${q.explain}`;
+  } else {
+    feedback.className = 'feedback bad';
+    feedback.textContent = `不正解。正しい答えの例：${q.template(vals)}　／　${q.explain}`;
+  }
+  if (qi < questions.length - 1) {
+    nextBtn.style.display = '';
+  } else {
+    const final = document.createElement('div');
+    final.style.marginTop = '8px';
+    final.textContent = `全${questions.length}問のうち ${score} 問正解でした。`;
+    feedback.appendChild(final);
+    retryBtn.style.display = '';
+  }
+}
+
+checkBtn.addEventListener('click', check);
+nextBtn.addEventListener('click', () => { qi++; render(); });
+retryBtn.addEventListener('click', () => { qi = 0; score = 0; render(); });
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (!answered) check();
+    else if (qi < questions.length - 1) { qi++; render(); }
+  }
+});
+
+render();
+</script>
+</body>
+</html>
