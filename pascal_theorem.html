@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>パスカルの定理 - インタラクティブ図</title>
+<style>
+  body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; background: #fafafa; }
+  svg { background: white; border: 1px solid #ccc; max-width: 100%; }
+  #info { margin-top: 10px; color: #333; font-size: 14px; }
+  button { margin-top: 10px; padding: 6px 14px; cursor: pointer; }
+  h2 { margin-top: 40px; }
+  .sliderRow { display:flex; align-items:center; gap:8px; width: 600px; max-width: 100%; margin-bottom: 6px; }
+  .sliderRow label { width: 90px; font-size: 14px; color: #555; }
+  .sliderRow input[type=range] { flex: 1; }
+  .sliderRow span { width: 36px; text-align: right; font-size: 14px; font-weight: bold; }
+</style>
+</head>
+<body>
+<h2>パスカルの定理（円・楕円の場合）</h2>
+<div class="sliderRow">
+  <label for="rxSlider">横の半径</label>
+  <input type="range" id="rxSlider" min="60" max="200" step="5" value="180">
+  <span id="rxOut">180</span>
+</div>
+<div class="sliderRow">
+  <label for="rySlider">縦の半径</label>
+  <input type="range" id="rySlider" min="60" max="200" step="5" value="180">
+  <span id="ryOut">180</span>
+</div>
+<svg id="svg" viewBox="0 0 600 480" width="600" height="480" style="touch-action:none;">
+  <ellipse id="conicShape" cx="300" cy="240" rx="180" ry="180" fill="none" stroke="#999" stroke-width="1"/>
+  <g id="hexEdges"></g>
+  <g id="extLines"></g>
+  <line id="pascalLine" x1="0" y1="0" x2="0" y2="0" stroke="#D85A30" stroke-width="2.5" stroke-dasharray="6 4"/>
+  <g id="intersections"></g>
+  <g id="points"></g>
+</svg>
+<div id="info">点 P1〜P6 をドラッグして円周上で動かせます。対辺の交点(オレンジ)は常に一直線上に並びます。</div>
+<button id="resetBtn">並びをリセット</button>
+
+<script>
+(function(){
+  const svg = document.getElementById('svg');
+  const cx = 300, cy = 240;
+  let rx = 180, ry = 180;
+  const labels = ['P1','P2','P3','P4','P5','P6'];
+  let angles = [ -90, -30, 30, 90, 150, 210 ].map(d => d*Math.PI/180);
+
+  function pos(a){ return [cx + rx*Math.cos(a), cy + ry*Math.sin(a)]; }
+
+  function lineIntersect(p1,p2,p3,p4){
+    const [x1,y1]=p1,[x2,y2]=p2,[x3,y3]=p3,[x4,y4]=p4;
+    const d = (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4);
+    if (Math.abs(d) < 1e-9) return null;
+    const t = ((x1-x3)*(y3-y4) - (y1-y3)*(x3-x4)) / d;
+    return [x1 + t*(x2-x1), y1 + t*(y2-y1)];
+  }
+
+  function extend(p1,p2,scale){
+    const mx=(p1[0]+p2[0])/2, my=(p1[1]+p2[1])/2;
+    const dx=p1[0]-p2[0], dy=p1[1]-p2[1];
+    return [[mx+dx*scale, my+dy*scale],[mx-dx*scale, my-dy*scale]];
+  }
+
+  const hexEdges = document.getElementById('hexEdges');
+  const extLines = document.getElementById('extLines');
+  const intersections = document.getElementById('intersections');
+  const points = document.getElementById('points');
+  const pascalLine = document.getElementById('pascalLine');
+
+  for(let i=0;i<6;i++){
+    const e = document.createElementNS('http://www.w3.org/2000/svg','line');
+    e.setAttribute('stroke','#555');
+    e.setAttribute('stroke-width','1.5');
+    hexEdges.appendChild(e);
+  }
+  for(let i=0;i<3;i++){
+    const e = document.createElementNS('http://www.w3.org/2000/svg','line');
+    e.setAttribute('stroke','#bbb');
+    e.setAttribute('stroke-width','1');
+    e.setAttribute('stroke-dasharray','3 3');
+    extLines.appendChild(e);
+  }
+  for(let i=0;i<3;i++){
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('r','5');
+    c.setAttribute('fill','#D85A30');
+    intersections.appendChild(c);
+  }
+  const pts=[];
+  for(let i=0;i<6;i++){
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('r','9');
+    c.setAttribute('fill','#7F77DD');
+    c.setAttribute('stroke','#26215C');
+    c.setAttribute('stroke-width','1.5');
+    c.style.cursor='grab';
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('font-size','13');
+    t.setAttribute('text-anchor','middle');
+    t.setAttribute('fill','#222');
+    t.textContent = labels[i];
+    g.appendChild(c); g.appendChild(t);
+    points.appendChild(g);
+    pts.push({g,c,t});
+  }
+
+  function render(){
+    const P = angles.map(pos);
+    for(let i=0;i<6;i++){
+      const e = hexEdges.children[i];
+      const a=P[i], b=P[(i+1)%6];
+      e.setAttribute('x1',a[0]); e.setAttribute('y1',a[1]);
+      e.setAttribute('x2',b[0]); e.setAttribute('y2',b[1]);
+    }
+    const pairs = [[0,1,3,4],[1,2,4,5],[2,3,5,0]];
+    const ipts = pairs.map(([a,b,c,d]) => lineIntersect(P[a],P[b],P[c],P[d]));
+
+    for(let i=0;i<3;i++){
+      const [a,b] = pairs[i];
+      const ext = extLines.children[i];
+      const ip = ipts[i];
+      if(ip){
+        ext.setAttribute('x1', P[a][0]); ext.setAttribute('y1', P[a][1]);
+        ext.setAttribute('x2', ip[0]); ext.setAttribute('y2', ip[1]);
+      } else {
+        ext.setAttribute('x1',0);ext.setAttribute('y1',0);ext.setAttribute('x2',0);ext.setAttribute('y2',0);
+      }
+      const ic = intersections.children[i];
+      if(ip){ ic.setAttribute('cx',ip[0]); ic.setAttribute('cy',ip[1]); ic.style.display=''; }
+      else { ic.style.display='none'; }
+    }
+
+    const valid = ipts.filter(p=>p);
+    if(valid.length>=2){
+      const [p1,p2] = [valid[0], valid[valid.length-1]];
+      const [e1,e2] = extend(p1,p2,3);
+      pascalLine.setAttribute('x1',e1[0]); pascalLine.setAttribute('y1',e1[1]);
+      pascalLine.setAttribute('x2',e2[0]); pascalLine.setAttribute('y2',e2[1]);
+      pascalLine.style.display='';
+    } else {
+      pascalLine.style.display='none';
+    }
+
+    for(let i=0;i<6;i++){
+      pts[i].c.setAttribute('cx',P[i][0]); pts[i].c.setAttribute('cy',P[i][1]);
+      const off = 18;
+      const nx = P[i][0] + (P[i][0]-cx)/rx*off;
+      const ny = P[i][1] + (P[i][1]-cy)/ry*off;
+      pts[i].t.setAttribute('x',nx); pts[i].t.setAttribute('y',ny+4);
+    }
+  }
+
+  let dragIdx = null;
+  function svgPoint(evt){
+    const rect = svg.getBoundingClientRect();
+    const vb = svg.viewBox.baseVal;
+    const x = (evt.clientX-rect.left)/rect.width*vb.width + vb.x;
+    const y = (evt.clientY-rect.top)/rect.height*vb.height + vb.y;
+    return [x,y];
+  }
+  pts.forEach((p,i)=>{
+    p.c.addEventListener('pointerdown', e=>{ dragIdx=i; p.c.setPointerCapture(e.pointerId); p.c.style.cursor='grabbing'; });
+  });
+  svg.addEventListener('pointermove', e=>{
+    if(dragIdx===null) return;
+    const [x,y] = svgPoint(e);
+    angles[dragIdx] = Math.atan2((y-cy)/ry, (x-cx)/rx);
+    render();
+  });
+  svg.addEventListener('pointerup', e=>{
+    if(dragIdx!==null){ pts[dragIdx].c.style.cursor='grab'; }
+    dragIdx=null;
+  });
+
+  const conicShape = document.getElementById('conicShape');
+  const rxSlider = document.getElementById('rxSlider');
+  const rySlider = document.getElementById('rySlider');
+  const rxOut = document.getElementById('rxOut');
+  const ryOut = document.getElementById('ryOut');
+  rxSlider.addEventListener('input', ()=>{
+    rx = parseFloat(rxSlider.value); rxOut.textContent = rx;
+    conicShape.setAttribute('rx', rx);
+    render();
+  });
+  rySlider.addEventListener('input', ()=>{
+    ry = parseFloat(rySlider.value); ryOut.textContent = ry;
+    conicShape.setAttribute('ry', ry);
+    render();
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    angles = [ -90, -30, 30, 90, 150, 210 ].map(d => d*Math.PI/180);
+    render();
+  });
+
+  render();
+})();
+</script>
+
+<h2>パスカルの定理（2次関数 y = ax&sup2; + bx + c の場合）</h2>
+<div class="sliderRow">
+  <label for="aSlider">a（曲がり方）</label>
+  <input type="range" id="aSlider" min="-2" max="2" step="0.1" value="0.3">
+  <span id="aOut">0.3</span>
+</div>
+<div class="sliderRow">
+  <label for="bSlider">b（傾き）</label>
+  <input type="range" id="bSlider" min="-5" max="5" step="0.1" value="0">
+  <span id="bOut">0</span>
+</div>
+<div class="sliderRow">
+  <label for="cSlider">c（切片）</label>
+  <input type="range" id="cSlider" min="-5" max="5" step="0.1" value="0">
+  <span id="cOut">0</span>
+</div>
+<svg id="svg2" viewBox="0 0 600 480" width="600" height="480" style="touch-action:none;">
+  <path id="curve" fill="none" stroke="#999" stroke-width="1.5"/>
+  <g id="hexEdges2"></g>
+  <g id="extLines2"></g>
+  <line id="pascalLine2" x1="0" y1="0" x2="0" y2="0" stroke="#D85A30" stroke-width="2.5" stroke-dasharray="6 4"/>
+  <g id="intersections2"></g>
+  <g id="points2"></g>
+</svg>
+<div id="info2">a, b, c を変えて2次関数の形を変えられます。曲線上の点 P1〜P6 はそれぞれ独立して左右にドラッグでき、六角形は P1→P2→…→P6→P1 の順で結ばれます。対辺の交点(オレンジ)は常に一直線上に並びます。</div>
+<button id="resetBtn2">点の位置をリセット</button>
+
+<script>
+(function(){
+  const svg = document.getElementById('svg2');
+  const W = 600, H = 480;
+  const padL = 40, padR = 40, padT = 40, padB = 40;
+  const xMath = [-6, 6];
+  let a = 0.3, b = 0, c = 0;
+  let xs = [-4.5, -2.7, -1, 0.8, 2.6, 4.5];
+
+  function f(x){ return a*x*x + b*x + c; }
+
+  function getYRange(){
+    let yMin = Infinity, yMax = -Infinity;
+    for(let i=0;i<=100;i++){
+      const x = xMath[0] + (xMath[1]-xMath[0])*i/100;
+      const y = f(x);
+      if(y<yMin) yMin=y;
+      if(y>yMax) yMax=y;
+    }
+    if(yMax-yMin < 1e-6){ yMin -= 1; yMax += 1; }
+    const pad = (yMax-yMin)*0.15;
+    return [yMin-pad, yMax+pad];
+  }
+
+  function toSvg(x,y,yMath){
+    const sx = padL + (x - xMath[0])/(xMath[1]-xMath[0]) * (W-padL-padR);
+    const sy = H - padB - (y - yMath[0])/(yMath[1]-yMath[0]) * (H-padT-padB);
+    return [sx, sy];
+  }
+  function svgToMathX(sx){
+    return xMath[0] + (sx - padL)/(W-padL-padR) * (xMath[1]-xMath[0]);
+  }
+
+  const curve = document.getElementById('curve');
+  const hexEdges = document.getElementById('hexEdges2');
+  const extLines = document.getElementById('extLines2');
+  const intersections = document.getElementById('intersections2');
+  const points = document.getElementById('points2');
+  const pascalLine = document.getElementById('pascalLine2');
+
+  for(let i=0;i<6;i++){
+    const e = document.createElementNS('http://www.w3.org/2000/svg','line');
+    e.setAttribute('stroke','#555');
+    e.setAttribute('stroke-width','1.5');
+    hexEdges.appendChild(e);
+  }
+  for(let i=0;i<3;i++){
+    const e = document.createElementNS('http://www.w3.org/2000/svg','line');
+    e.setAttribute('stroke','#bbb');
+    e.setAttribute('stroke-width','1');
+    e.setAttribute('stroke-dasharray','3 3');
+    extLines.appendChild(e);
+  }
+  for(let i=0;i<3;i++){
+    const c2 = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c2.setAttribute('r','5');
+    c2.setAttribute('fill','#D85A30');
+    intersections.appendChild(c2);
+  }
+  const pts=[];
+  for(let i=0;i<6;i++){
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    const cc = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    cc.setAttribute('r','9');
+    cc.setAttribute('fill','#7F77DD');
+    cc.setAttribute('stroke','#26215C');
+    cc.setAttribute('stroke-width','1.5');
+    cc.style.cursor='grab';
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('font-size','13');
+    t.setAttribute('text-anchor','middle');
+    t.setAttribute('fill','#222');
+    g.appendChild(cc); g.appendChild(t);
+    points.appendChild(g);
+    pts.push({g,c:cc,t});
+  }
+
+  function lineIntersect(p1,p2,p3,p4){
+    const [x1,y1]=p1,[x2,y2]=p2,[x3,y3]=p3,[x4,y4]=p4;
+    const d = (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4);
+    if (Math.abs(d) < 1e-9) return null;
+    const t = ((x1-x3)*(y3-y4) - (y1-y3)*(x3-x4)) / d;
+    return [x1 + t*(x2-x1), y1 + t*(y2-y1)];
+  }
+  function extend(p1,p2,scale){
+    const mx=(p1[0]+p2[0])/2, my=(p1[1]+p2[1])/2;
+    const dx=p1[0]-p2[0], dy=p1[1]-p2[1];
+    return [[mx+dx*scale, my+dy*scale],[mx-dx*scale, my-dy*scale]];
+  }
+
+  function render(){
+    const yMath = getYRange();
+
+    let d = '';
+    for(let i=0;i<=100;i++){
+      const x = xMath[0] + (xMath[1]-xMath[0])*i/100;
+      const [sx,sy] = toSvg(x, f(x), yMath);
+      d += (i===0?'M':'L') + sx.toFixed(2) + ',' + sy.toFixed(2) + ' ';
+    }
+    curve.setAttribute('d', d);
+
+    const P = xs.map(x => toSvg(x, f(x), yMath));
+
+    for(let i=0;i<6;i++){
+      const e = hexEdges.children[i];
+      const aP=P[i], bP=P[(i+1)%6];
+      e.setAttribute('x1',aP[0]); e.setAttribute('y1',aP[1]);
+      e.setAttribute('x2',bP[0]); e.setAttribute('y2',bP[1]);
+    }
+    const pairs = [[0,1,3,4],[1,2,4,5],[2,3,5,0]];
+    const ipts = pairs.map(([a2,b2,c2,d2]) => lineIntersect(P[a2],P[b2],P[c2],P[d2]));
+
+    for(let i=0;i<3;i++){
+      const [a2,b2] = pairs[i];
+      const ext = extLines.children[i];
+      const ip = ipts[i];
+      if(ip){
+        ext.setAttribute('x1', P[a2][0]); ext.setAttribute('y1', P[a2][1]);
+        ext.setAttribute('x2', ip[0]); ext.setAttribute('y2', ip[1]);
+      } else {
+        ext.setAttribute('x1',0);ext.setAttribute('y1',0);ext.setAttribute('x2',0);ext.setAttribute('y2',0);
+      }
+      const ic = intersections.children[i];
+      if(ip){ ic.setAttribute('cx',ip[0]); ic.setAttribute('cy',ip[1]); ic.style.display=''; }
+      else { ic.style.display='none'; }
+    }
+
+    const valid = ipts.filter(p=>p);
+    if(valid.length>=2){
+      const [p1,p2] = [valid[0], valid[valid.length-1]];
+      const [e1,e2] = extend(p1,p2,3);
+      pascalLine.setAttribute('x1',e1[0]); pascalLine.setAttribute('y1',e1[1]);
+      pascalLine.setAttribute('x2',e2[0]); pascalLine.setAttribute('y2',e2[1]);
+      pascalLine.style.display='';
+    } else {
+      pascalLine.style.display='none';
+    }
+
+    for(let i=0;i<6;i++){
+      pts[i].c.setAttribute('cx',P[i][0]); pts[i].c.setAttribute('cy',P[i][1]);
+      pts[i].t.setAttribute('x',P[i][0]); pts[i].t.setAttribute('y',P[i][1]-16);
+      pts[i].t.textContent = 'P' + (i+1);
+    }
+  }
+
+  let dragIdx = null;
+  function svgPoint(evt){
+    const rect = svg.getBoundingClientRect();
+    const vb = svg.viewBox.baseVal;
+    const x = (evt.clientX-rect.left)/rect.width*vb.width + vb.x;
+    const y = (evt.clientY-rect.top)/rect.height*vb.height + vb.y;
+    return [x,y];
+  }
+  pts.forEach((p,i)=>{
+    p.c.addEventListener('pointerdown', e=>{ dragIdx=i; p.c.setPointerCapture(e.pointerId); p.c.style.cursor='grabbing'; });
+  });
+  svg.addEventListener('pointermove', e=>{
+    if(dragIdx===null) return;
+    const [sx,sy] = svgPoint(e);
+    let mx = svgToMathX(sx);
+    mx = Math.max(xMath[0], Math.min(xMath[1], mx));
+    xs[dragIdx] = mx;
+    render();
+  });
+  svg.addEventListener('pointerup', e=>{
+    if(dragIdx!==null){ pts[dragIdx].c.style.cursor='grab'; }
+    dragIdx=null;
+  });
+
+  const aSlider = document.getElementById('aSlider');
+  const bSlider = document.getElementById('bSlider');
+  const cSlider = document.getElementById('cSlider');
+  const aOut = document.getElementById('aOut');
+  const bOut = document.getElementById('bOut');
+  const cOut = document.getElementById('cOut');
+  aSlider.addEventListener('input', ()=>{ a=parseFloat(aSlider.value); aOut.textContent=a.toFixed(1); render(); });
+  bSlider.addEventListener('input', ()=>{ b=parseFloat(bSlider.value); bOut.textContent=b.toFixed(1); render(); });
+  cSlider.addEventListener('input', ()=>{ c=parseFloat(cSlider.value); cOut.textContent=c.toFixed(1); render(); });
+
+  document.getElementById('resetBtn2').addEventListener('click', ()=>{
+    xs = [-4.5, -2.7, -1, 0.8, 2.6, 4.5];
+    render();
+  });
+
+  render();
+})();
+</script>
+
+<h2>パスカルの定理（双曲線 y = k / x の場合）</h2>
+<div class="sliderRow">
+  <label for="kSlider">k（曲線の形）</label>
+  <input type="range" id="kSlider" min="-8" max="8" step="0.5" value="4">
+  <span id="kOut">4</span>
+</div>
+<svg id="svg3" viewBox="0 0 600 480" width="600" height="480" style="touch-action:none;">
+  <path id="curve3a" fill="none" stroke="#999" stroke-width="1.5"/>
+  <path id="curve3b" fill="none" stroke="#999" stroke-width="1.5"/>
+  <g id="hexEdges3"></g>
+  <g id="extLines3"></g>
+  <line id="pascalLine3" x1="0" y1="0" x2="0" y2="0" stroke="#D85A30" stroke-width="2.5" stroke-dasharray="6 4"/>
+  <g id="intersections3"></g>
+  <g id="points3"></g>
+</svg>
+<div id="info3">k を変えて双曲線 y = k/x の形を変えられます。点 P1〜P6 は曲線上をそれぞれ独立してドラッグでき（左右の枝を行き来することはできません）、六角形は P1→P2→…→P6→P1 の順で結ばれます。対辺の交点(オレンジ)は常に一直線上に並びます。</div>
+<button id="resetBtn3">点の位置をリセット</button>
+
+<script>
+(function(){
+  const svg = document.getElementById('svg3');
+  const W = 600, H = 480;
+  const padL = 40, padR = 40, padT = 40, padB = 40;
+  const xMath = [-6, 6];
+  let k = 4;
+  let xs = [-5, -3, -1.5, 1.5, 3, 5];
+  const branches = xs.map(x => x < 0 ? -1 : 1);
+
+  function f(x){ return k / x; }
+
+  function getYRange(){
+    let yMin = Infinity, yMax = -Infinity;
+    const samples = [-6,-5,-4,-3,-2,-1,-0.5,-0.3, 0.3,0.5,1,2,3,4,5,6];
+    samples.forEach(x=>{
+      const y = f(x);
+      if(y<yMin) yMin=y;
+      if(y>yMax) yMax=y;
+    });
+    xs.forEach(x=>{
+      const y = f(x);
+      if(y<yMin) yMin=y;
+      if(y>yMax) yMax=y;
+    });
+    if(yMax-yMin < 1e-6){ yMin -= 1; yMax += 1; }
+    const pad = (yMax-yMin)*0.15;
+    return [yMin-pad, yMax+pad];
+  }
+
+  function toSvg(x,y,yMath){
+    const sx = padL + (x - xMath[0])/(xMath[1]-xMath[0]) * (W-padL-padR);
+    const sy = H - padB - (y - yMath[0])/(yMath[1]-yMath[0]) * (H-padT-padB);
+    return [sx, sy];
+  }
+  function svgToMathX(sx){
+    return xMath[0] + (sx - padL)/(W-padL-padR) * (xMath[1]-xMath[0]);
+  }
+
+  const curveA = document.getElementById('curve3a');
+  const curveB = document.getElementById('curve3b');
+  const hexEdges = document.getElementById('hexEdges3');
+  const extLines = document.getElementById('extLines3');
+  const intersections = document.getElementById('intersections3');
+  const points = document.getElementById('points3');
+  const pascalLine = document.getElementById('pascalLine3');
+
+  for(let i=0;i<6;i++){
+    const e = document.createElementNS('http://www.w3.org/2000/svg','line');
+    e.setAttribute('stroke','#555');
+    e.setAttribute('stroke-width','1.5');
+    hexEdges.appendChild(e);
+  }
+  for(let i=0;i<3;i++){
+    const e = document.createElementNS('http://www.w3.org/2000/svg','line');
+    e.setAttribute('stroke','#bbb');
+    e.setAttribute('stroke-width','1');
+    e.setAttribute('stroke-dasharray','3 3');
+    extLines.appendChild(e);
+  }
+  for(let i=0;i<3;i++){
+    const c2 = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c2.setAttribute('r','5');
+    c2.setAttribute('fill','#D85A30');
+    intersections.appendChild(c2);
+  }
+  const pts=[];
+  for(let i=0;i<6;i++){
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    const cc = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    cc.setAttribute('r','9');
+    cc.setAttribute('fill','#7F77DD');
+    cc.setAttribute('stroke','#26215C');
+    cc.setAttribute('stroke-width','1.5');
+    cc.style.cursor='grab';
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('font-size','13');
+    t.setAttribute('text-anchor','middle');
+    t.setAttribute('fill','#222');
+    g.appendChild(cc); g.appendChild(t);
+    points.appendChild(g);
+    pts.push({g,c:cc,t});
+  }
+
+  function lineIntersect(p1,p2,p3,p4){
+    const [x1,y1]=p1,[x2,y2]=p2,[x3,y3]=p3,[x4,y4]=p4;
+    const d = (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4);
+    if (Math.abs(d) < 1e-9) return null;
+    const t = ((x1-x3)*(y3-y4) - (y1-y3)*(x3-x4)) / d;
+    return [x1 + t*(x2-x1), y1 + t*(y2-y1)];
+  }
+  function extend(p1,p2,scale){
+    const mx=(p1[0]+p2[0])/2, my=(p1[1]+p2[1])/2;
+    const dx=p1[0]-p2[0], dy=p1[1]-p2[1];
+    return [[mx+dx*scale, my+dy*scale],[mx-dx*scale, my-dy*scale]];
+  }
+
+  function render(){
+    const yMath = getYRange();
+
+    let dA = '', dB = '';
+    for(let i=0;i<=100;i++){
+      const x = -6 + 5.7*i/100;
+      const [sx,sy] = toSvg(x, f(x), yMath);
+      dA += (i===0?'M':'L') + sx.toFixed(2) + ',' + sy.toFixed(2) + ' ';
+    }
+    for(let i=0;i<=100;i++){
+      const x = 0.3 + 5.7*i/100;
+      const [sx,sy] = toSvg(x, f(x), yMath);
+      dB += (i===0?'M':'L') + sx.toFixed(2) + ',' + sy.toFixed(2) + ' ';
+    }
+    curveA.setAttribute('d', dA);
+    curveB.setAttribute('d', dB);
+
+    const P = xs.map(x => toSvg(x, f(x), yMath));
+
+    for(let i=0;i<6;i++){
+      const e = hexEdges.children[i];
+      const aP=P[i], bP=P[(i+1)%6];
+      e.setAttribute('x1',aP[0]); e.setAttribute('y1',aP[1]);
+      e.setAttribute('x2',bP[0]); e.setAttribute('y2',bP[1]);
+    }
+    const pairs = [[0,1,3,4],[1,2,4,5],[2,3,5,0]];
+    const ipts = pairs.map(([a2,b2,c2,d2]) => lineIntersect(P[a2],P[b2],P[c2],P[d2]));
+
+    for(let i=0;i<3;i++){
+      const [a2,b2] = pairs[i];
+      const ext = extLines.children[i];
+      const ip = ipts[i];
+      if(ip){
+        ext.setAttribute('x1', P[a2][0]); ext.setAttribute('y1', P[a2][1]);
+        ext.setAttribute('x2', ip[0]); ext.setAttribute('y2', ip[1]);
+      } else {
+        ext.setAttribute('x1',0);ext.setAttribute('y1',0);ext.setAttribute('x2',0);ext.setAttribute('y2',0);
+      }
+      const ic = intersections.children[i];
+      if(ip){ ic.setAttribute('cx',ip[0]); ic.setAttribute('cy',ip[1]); ic.style.display=''; }
+      else { ic.style.display='none'; }
+    }
+
+    const valid = ipts.filter(p=>p);
+    if(valid.length>=2){
+      const [p1,p2] = [valid[0], valid[valid.length-1]];
+      const [e1,e2] = extend(p1,p2,3);
+      pascalLine.setAttribute('x1',e1[0]); pascalLine.setAttribute('y1',e1[1]);
+      pascalLine.setAttribute('x2',e2[0]); pascalLine.setAttribute('y2',e2[1]);
+      pascalLine.style.display='';
+    } else {
+      pascalLine.style.display='none';
+    }
+
+    for(let i=0;i<6;i++){
+      pts[i].c.setAttribute('cx',P[i][0]); pts[i].c.setAttribute('cy',P[i][1]);
+      pts[i].t.setAttribute('x',P[i][0]); pts[i].t.setAttribute('y',P[i][1]-16);
+      pts[i].t.textContent = 'P' + (i+1);
+    }
+  }
+
+  let dragIdx = null;
+  function svgPoint(evt){
+    const rect = svg.getBoundingClientRect();
+    const vb = svg.viewBox.baseVal;
+    const x = (evt.clientX-rect.left)/rect.width*vb.width + vb.x;
+    const y = (evt.clientY-rect.top)/rect.height*vb.height + vb.y;
+    return [x,y];
+  }
+  pts.forEach((p,i)=>{
+    p.c.addEventListener('pointerdown', e=>{ dragIdx=i; p.c.setPointerCapture(e.pointerId); p.c.style.cursor='grabbing'; });
+  });
+  svg.addEventListener('pointermove', e=>{
+    if(dragIdx===null) return;
+    const [sx,sy] = svgPoint(e);
+    let mx = svgToMathX(sx);
+    if(branches[dragIdx] < 0){
+      mx = Math.max(xMath[0], Math.min(-0.3, mx));
+    } else {
+      mx = Math.max(0.3, Math.min(xMath[1], mx));
+    }
+    xs[dragIdx] = mx;
+    render();
+  });
+  svg.addEventListener('pointerup', e=>{
+    if(dragIdx!==null){ pts[dragIdx].c.style.cursor='grab'; }
+    dragIdx=null;
+  });
+
+  const kSlider = document.getElementById('kSlider');
+  const kOut = document.getElementById('kOut');
+  kSlider.addEventListener('input', ()=>{ k=parseFloat(kSlider.value); kOut.textContent=k.toFixed(1); render(); });
+
+  document.getElementById('resetBtn3').addEventListener('click', ()=>{
+    xs = [-5, -3, -1.5, 1.5, 3, 5];
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
