@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>振り返りクイズ：メネラウスの定理・方べきの定理</title>
+<style>
+  body { font-family: "Hiragino Sans", "Yu Gothic", sans-serif; max-width: 640px; margin: 20px auto; padding: 0 16px; background: #fafafa; color: #222; }
+  h1 { font-size: 20px; }
+  .topbar { display:flex; justify-content:space-between; align-items:center; font-size: 13px; color: #666; margin-bottom: 8px; }
+  .card { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 18px; }
+  .figure { display:flex; justify-content:center; margin-bottom: 12px; }
+  .figure svg { width: 100%; max-width: 320px; height: auto; display: block; }
+  .qtext { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  .answers { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom: 10px; }
+  input[type=text] { font-size: 14px; padding: 6px 8px; border: 1px solid #bbb; border-radius: 6px; }
+  .feedback { font-size: 14px; min-height: 1.6em; margin-bottom: 10px; }
+  .ok { color: #0F6E56; }
+  .bad { color: #A32D2D; }
+  button { font-size: 14px; padding: 8px 16px; border: 1px solid #bbb; border-radius: 6px; background: #fff; cursor: pointer; margin-right: 8px; }
+  button:hover { background: #f0f0f0; }
+  .score { font-weight: bold; }
+</style>
+</head>
+<body>
+<h1>振り返りクイズ：メネラウスの定理・方べきの定理</h1>
+<div class="topbar">
+  <span id="progress">問題 1 / 7</span>
+  <span class="score" id="score">スコア 0 / 7</span>
+</div>
+<div class="card">
+  <div class="figure" id="figure"></div>
+  <p class="qtext" id="qtext"></p>
+  <div class="answers" id="answerArea"></div>
+  <div class="feedback" id="feedback"></div>
+  <div>
+    <button id="checkBtn">確認</button>
+    <button id="nextBtn" style="display:none;">次の問題 →</button>
+    <button id="retryBtn" style="display:none;">最初からやり直す</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 図形描画モジュール (point-based geometry renderer)
+// 点の座標を1か所で定義し、線分・円・ラベルはすべて
+// その座標から自動生成する。viewBox を使うので、
+// どのデバイス・画面幅でも点と線の位置関係は常に一致する。
+// ============================================================
+function geomFig(W, H, points, opts){
+  opts = opts || {};
+  const segments = opts.segments || [];
+  const circles = opts.circles || [];
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+
+  circles.forEach(c => {
+    svg += `<circle cx="${c.cx}" cy="${c.cy}" r="${c.r}" fill="none" stroke="${c.color || '#534AB7'}" stroke-width="2"/>`;
+  });
+
+  segments.forEach(s => {
+    const a = points[s.from], b = points[s.to];
+    const dash = s.dash ? ` stroke-dasharray="${s.dash}"` : '';
+    svg += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${s.color || '#534AB7'}" stroke-width="2"${dash}/>`;
+  });
+
+  Object.keys(points).forEach(name => {
+    const p = points[name];
+    if (p.hidden) return;
+    const r = p.r != null ? p.r : 3;
+    const color = p.color || '#222';
+    const lx = p.x + (p.lx != null ? p.lx : 0);
+    const ly = p.y + (p.ly != null ? p.ly : -10);
+    const anchor = p.anchor || 'middle';
+    if (r > 0) svg += `<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${color}"/>`;
+    svg += `<text x="${lx}" y="${ly}" text-anchor="${anchor}" font-size="14" fill="${color}">${p.label != null ? p.label : name}</text>`;
+  });
+
+  svg += `</svg>`;
+  return svg;
+}
+
+// --- 図1: メネラウスの定理 ---
+// △ABC: A=(210,25), B=(55,220), C=(320,220)
+// 割線（赤点線）slope=-0.5 を通る:  R(40,240)→P(80,220)→Q(267,126)→先端(335,92)
+// R は AB 延長上 (B の外側), P は BC 上, Q は CA 上
+const figMenelaus = geomFig(370, 270, {
+  A: { x: 210, y: 25,  ly: -10 },
+  B: { x: 55,  y: 220, lx: -14, ly: 14 },
+  C: { x: 320, y: 220, lx: 14,  ly: 14 },
+  P: { x: 80,  y: 220, color: '#D85A30', ly: 15 },
+  Q: { x: 267, y: 126, color: '#D85A30', lx: 16, ly: -8 },
+  R: { x: 40,  y: 240, color: '#D85A30', lx: -16, ly: 14 },
+  _e: { x: 335, y: 92, hidden: true }
+}, {
+  segments: [
+    { from: 'A', to: 'B' },
+    { from: 'B', to: 'C' },
+    { from: 'C', to: 'A' },
+    { from: 'R', to: '_e', color: '#D85A30', dash: '5 4' }
+  ]
+});
+
+// --- 図2: 円の内部で交わる2弦（PA・PB = PC・PD） ---
+// 円: 中心(140,120) 半径100
+// A(76,197), B(217,56) → 弦AB(緑): 交点P(151,122)
+// C(42,103), D(239,137) → 弦CD(橙)
+// 全点が半径100の円周上にある（計算済み）
+const figChords = geomFig(295, 255, {
+  P: { x: 151, y: 122, lx: 14, ly: -6 },
+  A: { x: 76,  y: 197, lx: -14, ly: 14 },
+  B: { x: 217, y: 56,  lx: 14,  ly: -8 },
+  C: { x: 42,  y: 103, lx: -14, ly: -4 },
+  D: { x: 239, y: 137, lx: 14,  ly:  4 }
+}, {
+  circles: [{ cx: 140, cy: 120, r: 100 }],
+  segments: [
+    { from: 'A', to: 'B', color: '#0F6E56' },
+    { from: 'C', to: 'D', color: '#D85A30' }
+  ]
+});
+
+// --- 図3: 接線と割線（PT² = PA・PB） ---
+// 円: 中心(180,120) 半径80
+// P=(20,120) は円外  T=(140,51) は円周上の接点
+// A=(100,120), B=(260,120) は円周上（割線PABは水平）
+const figTangent = geomFig(300, 260, {
+  P: { x: 20,  y: 120, lx: -14, ly: 4 },
+  T: { x: 140, y: 51,  color: '#D85A30', lx: 0, ly: -8 },
+  A: { x: 100, y: 120, lx: 0,   ly: -10 },
+  B: { x: 260, y: 120, lx: 14,  ly: -8 }
+}, {
+  circles: [{ cx: 180, cy: 120, r: 80 }],
+  segments: [
+    { from: 'P', to: 'B', color: '#0F6E56' },
+    { from: 'P', to: 'T', color: '#D85A30' }
+  ]
+});
+
+// --- 図4: 円外の点から2本の割線（PA・PB = PC・PD） ---
+// 円: 中心(180,120) 半径80
+// P=(20,120) は円外
+// 割線1 (緑): A=(100,120), B=(260,120) — 水平  PA=80, PB=240
+// 割線2 (橙): C=(116,168), D=(180,200) — 傾き0.5  PC=107, PD=179
+// PA・PB = 19200 ≈ PC・PD ✓
+const figTwoSecants = geomFig(300, 260, {
+  P: { x: 20,  y: 120, lx: -14, ly: 4 },
+  A: { x: 100, y: 120, lx: 0,   ly: -10 },
+  B: { x: 260, y: 120, lx: 14,  ly: -8 },
+  C: { x: 116, y: 168, color: '#D85A30', lx: -14, ly: 16 },
+  D: { x: 180, y: 200, color: '#D85A30', lx: 0,   ly: 16 }
+}, {
+  circles: [{ cx: 180, cy: 120, r: 80 }],
+  segments: [
+    { from: 'P', to: 'B', color: '#0F6E56' },
+    { from: 'P', to: 'D', color: '#D85A30' }
+  ]
+});
+
+const questions = [
+  {
+    fig: figMenelaus,
+    text: "メネラウスの定理：△ABCの辺BC, CA, ABまたはその延長と、1本の直線(赤の点線)との交点をそれぞれP, Q, Rとするとき、 (BP/PC)・(CQ/QA)・(AR/RB) = ［　？　］",
+    blanks: [{ key: 'a', width: 50, check: v => v.trim() === '1' }],
+    template: (v) => `(BP/PC)・(CQ/QA)・(AR/RB) = ${v.a}`,
+    explain: "比の積はつねに 1 になります。これがメネラウスの定理です。"
+  },
+  {
+    fig: figMenelaus,
+    text: "上の図で BP:PC = 2:3, CQ:QA = 4:1 のとき、AR:RB を求めなさい。分数 AR/RB の値を入力してください（例：1/2）。",
+    blanks: [{ key: 'a', width: 70, check: v => simplifyCheck(v, 3, 8) }],
+    template: (v) => `AR/RB = ${v.a}`,
+    explain: "(2/3)・(4/1)・(AR/RB)=1 より AR/RB = 3/8 です。"
+  },
+  {
+    fig: figMenelaus,
+    text: "メネラウスの定理の逆：図のP, Q, Rのような3点について、対応する比の積が ［　？　］ になれば、その3点は一直線上にある（共線である）と言える。",
+    blanks: [{ key: 'a', width: 50, check: v => v.trim() === '1' }],
+    template: (v) => `比の積 = ${v.a} ⟹ 共線`,
+    explain: "比の積が 1 になることが、共線性を示す条件でした。"
+  },
+  {
+    fig: figChords,
+    text: "方べきの定理：円の弦AB, CDが円内の点Pで交わるとき、PA・PB = ［　？　］・［　？　］",
+    blanks: [
+      { key: 'a', width: 50, check: v => v.trim().toUpperCase() === 'PC' },
+      { key: 'b', width: 50, check: v => v.trim().toUpperCase() === 'PD' }
+    ],
+    template: (v) => `PA・PB = ${v.a}・${v.b}`,
+    explain: "PA・PB = PC・PD が方べきの定理の基本形です。"
+  },
+  {
+    fig: figChords,
+    text: "上の図で PA = 4, PB = 6, PC = 3 のとき、PDの値を求めなさい。",
+    blanks: [{ key: 'a', width: 60, check: v => v.trim() === '8' }],
+    template: (v) => `PD = ${v.a}`,
+    explain: "PA・PB = PC・PD より 4×6 = 3×PD なので PD = 8 です。"
+  },
+  {
+    fig: figTangent,
+    text: "円外の点Pから接線PT（点Tで接する）と割線PAB（緑、PA=4, AB=5）を引いたとき、PT^2 = PA・PB が成り立つ。PB と PT の値をそれぞれ求めなさい。",
+    blanks: [
+      { key: 'a', width: 60, check: v => v.trim() === '9' },
+      { key: 'b', width: 60, check: v => v.trim() === '6' }
+    ],
+    template: (v) => `PB = ${v.a},　PT = ${v.b}`,
+    explain: "PB = PA + AB = 4+5 = 9。PT^2 = PA・PB = 4×9 = 36 より PT = 6 です。"
+  },
+  {
+    fig: figTwoSecants,
+    text: "円外の点Pから2本の割線PAB（緑）, PCD（赤）を引き、PA = 3, PB = 8, PC = 4 のとき、PDの値を求めなさい。",
+    blanks: [{ key: 'a', width: 60, check: v => v.trim() === '6' }],
+    template: (v) => `PD = ${v.a}`,
+    explain: "PA・PB = PC・PD より 3×8 = 4×PD なので PD = 6 です。"
+  }
+];
+
+function simplifyCheck(v, num, den){
+  v = v.trim();
+  if (v === num + '/' + den) return true;
+  const f = parseFloat(v);
+  if (!isNaN(f) && Math.abs(f - num/den) < 1e-6) return true;
+  return false;
+}
+
+let qi = 0, score = 0, answered = false;
+
+const qtext = document.getElementById('qtext');
+const figure = document.getElementById('figure');
+const answerArea = document.getElementById('answerArea');
+const feedback = document.getElementById('feedback');
+const progress = document.getElementById('progress');
+const scoreEl = document.getElementById('score');
+const checkBtn = document.getElementById('checkBtn');
+const nextBtn = document.getElementById('nextBtn');
+const retryBtn = document.getElementById('retryBtn');
+
+function render(){
+  const q = questions[qi];
+  answered = false;
+  progress.textContent = `問題 ${qi+1} / ${questions.length}`;
+  scoreEl.textContent = `スコア ${score} / ${questions.length}`;
+  figure.innerHTML = q.fig;
+  qtext.textContent = q.text;
+  answerArea.innerHTML = '';
+  q.blanks.forEach((b, idx) => {
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.style.width = b.width + 'px';
+    inp.id = 'blank_' + idx;
+    answerArea.appendChild(inp);
+  });
+  feedback.innerHTML = '';
+  feedback.className = 'feedback';
+  checkBtn.style.display = '';
+  nextBtn.style.display = 'none';
+  retryBtn.style.display = 'none';
+  checkBtn.disabled = false;
+}
+
+function check(){
+  if (answered) return;
+  const q = questions[qi];
+  const vals = {};
+  let allCorrect = true;
+  q.blanks.forEach((b, idx) => {
+    const inp = document.getElementById('blank_' + idx);
+    vals[b.key] = inp.value;
+    const ok = b.check(inp.value);
+    inp.style.borderColor = ok ? '#0F6E56' : '#A32D2D';
+    if (!ok) allCorrect = false;
+  });
+  answered = true;
+  checkBtn.disabled = true;
+  if (allCorrect) {
+    score++;
+    scoreEl.textContent = `スコア ${score} / ${questions.length}`;
+    feedback.className = 'feedback ok';
+    feedback.textContent = `正解！　${q.explain}`;
+  } else {
+    feedback.className = 'feedback bad';
+    feedback.textContent = `不正解。${q.template(vals)}　／　${q.explain}`;
+  }
+  if (qi < questions.length - 1) {
+    nextBtn.style.display = '';
+  } else {
+    const final = document.createElement('div');
+    final.style.marginTop = '8px';
+    final.textContent = `全${questions.length}問のうち ${score} 問正解でした。`;
+    feedback.appendChild(final);
+    retryBtn.style.display = '';
+  }
+}
+
+checkBtn.addEventListener('click', check);
+nextBtn.addEventListener('click', () => { qi++; render(); });
+retryBtn.addEventListener('click', () => { qi = 0; score = 0; render(); });
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (!answered) check();
+    else if (qi < questions.length - 1) { qi++; render(); }
+  }
+});
+
+render();
+</script>
+</body>
+</html>
