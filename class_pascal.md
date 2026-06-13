@@ -92,6 +92,35 @@ $$\frac{XP}{PZ} \cdot \frac{ZQ}{QY} \cdot \frac{YR}{RX} = 1$$
 
 以下，この式を目標として変形していく。
 
+<figure style="margin:1em auto;max-width:280px;">
+<svg viewBox="0 0 440 440" xmlns="http://www.w3.org/2000/svg" style="width:100%;background:#0f1f10;border-radius:8px;">
+  <circle cx="220" cy="250" r="90" fill="none" stroke="#3a6a3a" stroke-width="1.5"/>
+  <line x1="165" y1="321" x2="130" y2="249" stroke="#5a8a5a" stroke-width="1.5"/>
+  <line x1="130" y1="249" x2="306" y2="276" stroke="#5a8a5a" stroke-width="1.5"/>
+  <line x1="306" y1="276" x2="185" y2="167" stroke="#5a8a5a" stroke-width="1.5"/>
+  <line x1="185" y1="167" x2="290" y2="193" stroke="#5a8a5a" stroke-width="1.5"/>
+  <line x1="290" y1="193" x2="240" y2="338" stroke="#5a8a5a" stroke-width="1.5"/>
+  <line x1="240" y1="338" x2="165" y2="321" stroke="#5a8a5a" stroke-width="1.5"/>
+  <line x1="20" y1="19" x2="212" y2="419" stroke="#D9A26B" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <line x1="20" y1="19" x2="272" y2="245" stroke="#D9A26B" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <line x1="272" y1="245" x2="212" y2="419" stroke="#D9A26B" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <line x1="78" y1="141" x2="420" y2="379" stroke="#3FA88A" stroke-width="1.5" stroke-dasharray="7 4"/>
+  <circle cx="165" cy="321" r="3.5" fill="#e2dcbe"/><text x="148" y="335" font-size="13" fill="#e2dcbe" font-family="serif">A</text>
+  <circle cx="130" cy="249" r="3.5" fill="#e2dcbe"/><text x="113" y="254" font-size="13" fill="#e2dcbe" font-family="serif">B</text>
+  <circle cx="306" cy="276" r="3.5" fill="#e2dcbe"/><text x="312" y="278" font-size="13" fill="#e2dcbe" font-family="serif">C</text>
+  <circle cx="185" cy="167" r="3.5" fill="#e2dcbe"/><text x="176" y="158" font-size="13" fill="#e2dcbe" font-family="serif">D</text>
+  <circle cx="290" cy="193" r="3.5" fill="#e2dcbe"/><text x="296" y="188" font-size="13" fill="#e2dcbe" font-family="serif">E</text>
+  <circle cx="240" cy="338" r="3.5" fill="#e2dcbe"/><text x="244" y="353" font-size="13" fill="#e2dcbe" font-family="serif">F</text>
+  <circle cx="20" cy="19" r="5" fill="#D85A30"/><text x="27" y="17" font-size="14" fill="#D85A30" font-family="serif" font-weight="bold">X</text>
+  <circle cx="272" cy="245" r="5" fill="#D85A30"/><text x="278" y="242" font-size="14" fill="#D85A30" font-family="serif" font-weight="bold">Y</text>
+  <circle cx="212" cy="419" r="5" fill="#D85A30"/><text x="218" y="437" font-size="14" fill="#D85A30" font-family="serif" font-weight="bold">Z</text>
+  <circle cx="78" cy="141" r="5" fill="#3FA88A"/><text x="55" y="139" font-size="13" fill="#3FA88A" font-family="serif" font-weight="bold">P</text>
+  <circle cx="263" cy="269" r="5" fill="#3FA88A"/><text x="266" y="260" font-size="13" fill="#3FA88A" font-family="serif" font-weight="bold">Q</text>
+  <circle cx="420" cy="379" r="5" fill="#3FA88A"/><text x="403" y="373" font-size="13" fill="#3FA88A" font-family="serif" font-weight="bold">R</text>
+</svg>
+<figcaption style="text-align:center;font-size:0.78em;color:#7aaa7a;margin-top:0.3em;">補助三角形 △XYZ（橙破線）と目標点 P, Q, R（緑）</figcaption>
+</figure>
+
 ---
 
 **Step 1：メネラウスの定理を $3$ 回適用する**
@@ -100,13 +129,70 @@ $$\frac{XP}{PZ} \cdot \frac{ZQ}{QY} \cdot \frac{YR}{RX} = 1$$
 
 $$\frac{XB}{BZ} \cdot \frac{ZQ}{QY} \cdot \frac{YC}{CX} = 1 \implies \frac{ZQ}{QY} = \frac{BZ}{XB} \cdot \frac{CX}{YC}$$
 
+<figure style="margin:0.8em auto;max-width:240px;">
+<svg viewBox="0 0 440 440" xmlns="http://www.w3.org/2000/svg" style="width:100%;background:#0f1f10;border-radius:8px;">
+  <circle cx="220" cy="250" r="90" fill="none" stroke="#2a3a2a" stroke-width="1.2"/>
+  <line x1="20" y1="19" x2="212" y2="419" stroke="#D9A26B" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <line x1="20" y1="19" x2="272" y2="245" stroke="#D9A26B" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <line x1="272" y1="245" x2="212" y2="419" stroke="#D9A26B" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <line x1="80" y1="240" x2="342" y2="281" stroke="#5b9dd9" stroke-width="2.5"/>
+  <circle cx="185" cy="167" r="3" fill="#3a5a3a"/><circle cx="290" cy="193" r="3" fill="#3a5a3a"/>
+  <circle cx="165" cy="321" r="3" fill="#3a5a3a"/><circle cx="240" cy="338" r="3" fill="#3a5a3a"/>
+  <circle cx="20" cy="19" r="4.5" fill="#D85A30"/><text x="27" y="17" font-size="13" fill="#D85A30" font-family="serif" font-weight="bold">X</text>
+  <circle cx="272" cy="245" r="4.5" fill="#D85A30"/><text x="278" y="242" font-size="13" fill="#D85A30" font-family="serif" font-weight="bold">Y</text>
+  <circle cx="212" cy="419" r="4.5" fill="#D85A30"/><text x="218" y="437" font-size="13" fill="#D85A30" font-family="serif" font-weight="bold">Z</text>
+  <circle cx="130" cy="249" r="5" fill="#5b9dd9"/><text x="112" y="246" font-size="14" fill="#5b9dd9" font-family="serif" font-weight="bold">B</text>
+  <circle cx="263" cy="269" r="5" fill="#5b9dd9"/><text x="268" y="260" font-size="14" fill="#5b9dd9" font-family="serif" font-weight="bold">Q</text>
+  <circle cx="306" cy="276" r="5" fill="#5b9dd9"/><text x="313" y="273" font-size="14" fill="#5b9dd9" font-family="serif" font-weight="bold">C</text>
+</svg>
+<figcaption style="text-align:center;font-size:0.78em;color:#7aaa7a;margin-top:0.3em;">① 直線 BCQ が △XYZ を横切る</figcaption>
+</figure>
+
 ② $\triangle XYZ$ に直線 $DEP$ を適用：
 
 $$\frac{XP}{PZ} \cdot \frac{ZE}{EY} \cdot \frac{YD}{DX} = 1 \implies \frac{XP}{PZ} = \frac{EY}{ZE} \cdot \frac{DX}{YD}$$
 
+<figure style="margin:0.8em auto;max-width:240px;">
+<svg viewBox="0 0 440 440" xmlns="http://www.w3.org/2000/svg" style="width:100%;background:#0f1f10;border-radius:8px;">
+  <circle cx="220" cy="250" r="90" fill="none" stroke="#2a3a2a" stroke-width="1.2"/>
+  <line x1="20" y1="19" x2="212" y2="419" stroke="#D9A26B" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <line x1="20" y1="19" x2="272" y2="245" stroke="#D9A26B" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <line x1="272" y1="245" x2="212" y2="419" stroke="#D9A26B" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <line x1="47" y1="133" x2="320" y2="201" stroke="#e8873a" stroke-width="2.5"/>
+  <circle cx="130" cy="249" r="3" fill="#3a5a3a"/><circle cx="306" cy="276" r="3" fill="#3a5a3a"/>
+  <circle cx="165" cy="321" r="3" fill="#3a5a3a"/><circle cx="240" cy="338" r="3" fill="#3a5a3a"/>
+  <circle cx="20" cy="19" r="4.5" fill="#D85A30"/><text x="27" y="17" font-size="13" fill="#D85A30" font-family="serif" font-weight="bold">X</text>
+  <circle cx="272" cy="245" r="4.5" fill="#D85A30"/><text x="278" y="242" font-size="13" fill="#D85A30" font-family="serif" font-weight="bold">Y</text>
+  <circle cx="212" cy="419" r="4.5" fill="#D85A30"/><text x="218" y="437" font-size="13" fill="#D85A30" font-family="serif" font-weight="bold">Z</text>
+  <circle cx="78" cy="141" r="5" fill="#e8873a"/><text x="55" y="139" font-size="14" fill="#e8873a" font-family="serif" font-weight="bold">P</text>
+  <circle cx="185" cy="167" r="5" fill="#e8873a"/><text x="175" y="158" font-size="14" fill="#e8873a" font-family="serif" font-weight="bold">D</text>
+  <circle cx="290" cy="193" r="5" fill="#e8873a"/><text x="296" y="188" font-size="14" fill="#e8873a" font-family="serif" font-weight="bold">E</text>
+</svg>
+<figcaption style="text-align:center;font-size:0.78em;color:#7aaa7a;margin-top:0.3em;">② 直線 DEP が △XYZ を横切る</figcaption>
+</figure>
+
 ③ $\triangle XYZ$ に直線 $FAR$ を適用：
 
 $$\frac{XA}{AZ} \cdot \frac{ZF}{FY} \cdot \frac{YR}{RX} = 1 \implies \frac{YR}{RX} = \frac{AZ}{XA} \cdot \frac{FY}{ZF}$$
+
+<figure style="margin:0.8em auto;max-width:240px;">
+<svg viewBox="0 0 440 440" xmlns="http://www.w3.org/2000/svg" style="width:100%;background:#0f1f10;border-radius:8px;">
+  <circle cx="220" cy="250" r="90" fill="none" stroke="#2a3a2a" stroke-width="1.2"/>
+  <line x1="20" y1="19" x2="212" y2="419" stroke="#D9A26B" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <line x1="20" y1="19" x2="272" y2="245" stroke="#D9A26B" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <line x1="272" y1="245" x2="212" y2="419" stroke="#D9A26B" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <line x1="143" y1="316" x2="425" y2="380" stroke="#5ac87a" stroke-width="2.5"/>
+  <circle cx="130" cy="249" r="3" fill="#3a5a3a"/><circle cx="306" cy="276" r="3" fill="#3a5a3a"/>
+  <circle cx="185" cy="167" r="3" fill="#3a5a3a"/><circle cx="290" cy="193" r="3" fill="#3a5a3a"/>
+  <circle cx="20" cy="19" r="4.5" fill="#D85A30"/><text x="27" y="17" font-size="13" fill="#D85A30" font-family="serif" font-weight="bold">X</text>
+  <circle cx="272" cy="245" r="4.5" fill="#D85A30"/><text x="278" y="242" font-size="13" fill="#D85A30" font-family="serif" font-weight="bold">Y</text>
+  <circle cx="212" cy="419" r="4.5" fill="#D85A30"/><text x="218" y="437" font-size="13" fill="#D85A30" font-family="serif" font-weight="bold">Z</text>
+  <circle cx="165" cy="321" r="5" fill="#5ac87a"/><text x="148" y="334" font-size="14" fill="#5ac87a" font-family="serif" font-weight="bold">A</text>
+  <circle cx="240" cy="338" r="5" fill="#5ac87a"/><text x="244" y="353" font-size="14" fill="#5ac87a" font-family="serif" font-weight="bold">F</text>
+  <circle cx="420" cy="379" r="5" fill="#5ac87a"/><text x="403" y="373" font-size="14" fill="#5ac87a" font-family="serif" font-weight="bold">R</text>
+</svg>
+<figcaption style="text-align:center;font-size:0.78em;color:#7aaa7a;margin-top:0.3em;">③ 直線 FAR が △XYZ を横切る</figcaption>
+</figure>
 
 ---
 
@@ -133,6 +219,23 @@ $1$ つ目のカタマリ $\dfrac{DX \cdot CX}{XB \cdot XA}$ は頂点 $X$ 周�
 - 頂点 $Y$ から：$YC \cdot YD = YE \cdot YF \implies \dfrac{EY \cdot FY}{YD \cdot YC} = 1$
 
 - 頂点 $Z$ から：$ZE \cdot ZF = ZA \cdot ZB \implies \dfrac{BZ \cdot AZ}{ZE \cdot ZF} = 1$
+
+<figure style="margin:0.8em auto;max-width:260px;">
+<svg viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;background:#0f1f10;border-radius:8px;">
+  <circle cx="220" cy="250" r="90" fill="none" stroke="#3a6a3a" stroke-width="1.5"/>
+  <line x1="20" y1="19" x2="363" y2="327" stroke="#5b9dd9" stroke-width="1.8"/>
+  <line x1="20" y1="19" x2="187" y2="366" stroke="#e8873a" stroke-width="1.8"/>
+  <circle cx="20" cy="19" r="5" fill="#D85A30"/><text x="28" y="17" font-size="13" fill="#D85A30" font-family="serif" font-weight="bold">X</text>
+  <circle cx="185" cy="167" r="4" fill="#5b9dd9"/><text x="172" y="158" font-size="13" fill="#5b9dd9" font-family="serif">D</text>
+  <circle cx="306" cy="276" r="4" fill="#5b9dd9"/><text x="312" y="274" font-size="13" fill="#5b9dd9" font-family="serif">C</text>
+  <circle cx="130" cy="249" r="4" fill="#e8873a"/><text x="112" y="247" font-size="13" fill="#e8873a" font-family="serif">B</text>
+  <circle cx="165" cy="321" r="4" fill="#e8873a"/><text x="148" y="335" font-size="13" fill="#e8873a" font-family="serif">A</text>
+  <text x="18" y="42" font-size="11" fill="#5b9dd9" font-family="sans-serif">XD · XC</text>
+  <text x="18" y="58" font-size="11" fill="#7aaa7a" font-family="sans-serif">=</text>
+  <text x="18" y="74" font-size="11" fill="#e8873a" font-family="sans-serif">XB · XA</text>
+</svg>
+<figcaption style="text-align:center;font-size:0.78em;color:#7aaa7a;margin-top:0.3em;">頂点 X の方べき：2本の割線の積が等しい</figcaption>
+</figure>
 
 ---
 
