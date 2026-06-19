@@ -274,6 +274,8 @@ $$\frac{XP}{PZ} \cdot \frac{ZQ}{QY} \cdot \frac{YR}{RX} = 1 \cdot 1 \cdot 1 = 1$
 
 <iframe src="pascal_exercises_quiz.html" style="width:100%;height:740px;border:1px solid #3a6a3a;border-radius:10px;background:#fff;" title="パスカルの定理：応用演習クイズ"></iframe>
 
+[証明問題ワークシート（pascal_exercises.md）](pascal_exercises.md)
+
 ---
 
 ## 本時の振り返り
