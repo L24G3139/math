@@ -11,17 +11,17 @@
 <figure style="margin:1em auto;max-width:300px;">
 <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;background:#0f1f10;border-radius:8px;">
   <circle cx="160" cy="160" r="100" fill="none" stroke="#3a6a3a" stroke-width="1.5"/>
-  <line x1="160"   y1="60"  x2="246.6" y2="210" stroke="#D85A30" stroke-width="2"/>
-  <line x1="246.6" y1="110" x2="160"   y2="260" stroke="#D85A30" stroke-width="2"/>
-  <line x1="246.6" y1="210" x2="73.4"  y2="110" stroke="#5b9dd9" stroke-width="2"/>
-  <line x1="160"   y1="260" x2="73.4"  y2="60"  stroke="#5b9dd9" stroke-width="2"/>
-  <line x1="73.4"  y1="210" x2="246.6" y2="110" stroke="#5ac87a" stroke-width="2"/>
+  <line x1="160"   y1="60"  x2="246.6" y2="110" stroke="#D85A30" stroke-width="2"/>
+  <line x1="160"   y1="260" x2="73.4"  y2="210" stroke="#D85A30" stroke-width="2"/>
+  <line x1="246.6" y1="110" x2="246.6" y2="210" stroke="#5b9dd9" stroke-width="2"/>
+  <line x1="73.4"  y1="210" x2="73.4"  y2="110" stroke="#5b9dd9" stroke-width="2"/>
+  <line x1="246.6" y1="210" x2="160"   y2="260" stroke="#5ac87a" stroke-width="2"/>
   <line x1="73.4"  y1="110" x2="160"   y2="60"  stroke="#5ac87a" stroke-width="2"/>
   <circle cx="160"   cy="60"  r="4" fill="#f2ecce"/><text x="160"   y="46"  text-anchor="middle" font-size="14" fill="#f2ecce" font-family="serif">A</text>
-  <circle cx="246.6" cy="110" r="4" fill="#f2ecce"/><text x="262"   y="113" text-anchor="middle" font-size="14" fill="#f2ecce" font-family="serif">B</text>
-  <circle cx="246.6" cy="210" r="4" fill="#f2ecce"/><text x="262"   y="214" text-anchor="middle" font-size="14" fill="#f2ecce" font-family="serif">C</text>
-  <circle cx="160"   cy="260" r="4" fill="#f2ecce"/><text x="160"   y="278" text-anchor="middle" font-size="14" fill="#f2ecce" font-family="serif">D</text>
-  <circle cx="73.4"  cy="210" r="4" fill="#f2ecce"/><text x="58"    y="214" text-anchor="middle" font-size="14" fill="#f2ecce" font-family="serif">E</text>
+  <circle cx="246.6" cy="110" r="4" fill="#f2ecce"/><text x="262"   y="113" text-anchor="middle" font-size="14" fill="#f2ecce" font-family="serif">C</text>
+  <circle cx="246.6" cy="210" r="4" fill="#f2ecce"/><text x="262"   y="214" text-anchor="middle" font-size="14" fill="#f2ecce" font-family="serif">E</text>
+  <circle cx="160"   cy="260" r="4" fill="#f2ecce"/><text x="160"   y="278" text-anchor="middle" font-size="14" fill="#f2ecce" font-family="serif">B</text>
+  <circle cx="73.4"  cy="210" r="4" fill="#f2ecce"/><text x="58"    y="214" text-anchor="middle" font-size="14" fill="#f2ecce" font-family="serif">D</text>
   <circle cx="73.4"  cy="110" r="4" fill="#f2ecce"/><text x="58"    y="113" text-anchor="middle" font-size="14" fill="#f2ecce" font-family="serif">F</text>
   <line x1="18" y1="300" x2="40" y2="300" stroke="#D85A30" stroke-width="2"/><text x="45" y="305" font-size="11" fill="#ccc" font-family="sans-serif">AC↔BD</text>
   <line x1="118" y1="300" x2="140" y2="300" stroke="#5b9dd9" stroke-width="2"/><text x="145" y="305" font-size="11" fill="#ccc" font-family="sans-serif">CE↔DF</text>
