@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>演習問題：パスカルの定理の拡張</title>
+
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="fontstyle.css">
+        <script>
+            MathJax = {
+                tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+            };
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    </head>
+    <body class="sidebar">
+        <header>
+            <ul class="header-list">
+                <li id="header-list"><a href="index.html" style="color:#fff;text-decoration:none;">🏠 ホーム</a></li>
+                <li id="header-list"><a href="class.html"  style="color:#fff;text-decoration:none;">← 授業へ戻る</a></li>
+            </ul>
+        </header>
+
+        <main id="main-content">
+        </main>
+
+        <footer></footer>
+
+        <script>
+            fetch('pascal_exercises.md')
+                .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+                .then(md => {
+                    const el = document.getElementById('main-content');
+                    el.innerHTML = marked.parse(md);
+                    MathJax.typesetPromise([el]);
+                })
+                .catch(() => {
+                    document.getElementById('main-content').innerHTML =
+                        '<p style="padding:2rem;color:#f88">ファイルが見つかりません。</p>';
+                });
+        </script>
+    </body>
+</html>
